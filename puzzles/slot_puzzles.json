@@ -1,0 +1,557 @@
+{
+  "puzzles": [
+    {
+      "id": "slot_nand_1",
+      "name": "Completa el NAND",
+      "prompt": "Coloca la compuerta que falta para que el circuito implemente NAND (NOT de AND).",
+      "expression": "F = ¬(A · B)",
+      "difficulty": 1,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [{"ref": "g_and", "type": "AND", "x": 320, "y": 220}],
+        "slots": [{"ref": "slot_not", "x": 580, "y": 220, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "g_and:0"},
+          {"from": "B:0", "to": "g_and:1"},
+          {"from": "g_and:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "AND", "OR"]
+    },
+    {
+      "id": "slot_and_1",
+      "name": "Completa el AND",
+      "prompt": "Las entradas A y B ya están conectadas. Coloca la compuerta AND en el espacio vacío.",
+      "expression": "F = A · B",
+      "difficulty": 1,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 0},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_and", "x": 420, "y": 220, "accepts": ["AND"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_and:0"},
+          {"from": "B:0", "to": "slot_and:1"},
+          {"from": "slot_and:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["AND", "OR", "NOT"]
+    },
+    {
+      "id": "slot_or_1",
+      "name": "Completa el OR",
+      "prompt": "Coloca la compuerta OR para unir las señales de A y B hacia la salida F.",
+      "expression": "F = A + B",
+      "difficulty": 1,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 0},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_or", "x": 420, "y": 220, "accepts": ["OR"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_or:0"},
+          {"from": "B:0", "to": "slot_or:1"},
+          {"from": "slot_or:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["OR", "AND", "NOT"]
+    },
+    {
+      "id": "slot_not_1",
+      "name": "Completa el NOT",
+      "prompt": "La entrada A llega al espacio vacío. Coloca NOT para invertir la señal en F.",
+      "expression": "F = ¬A",
+      "difficulty": 1,
+      "expected_truth_table": [
+        {"A": 0, "F": 1},
+        {"A": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 240}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_not", "x": 420, "y": 220, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "AND", "OR"]
+    },
+    {
+      "id": "slot_xor_1",
+      "name": "Completa el XOR",
+      "prompt": "Coloca XOR entre A y B. La salida es 1 solo cuando las entradas son diferentes.",
+      "expression": "F = A ⊕ B",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 0},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_xor", "x": 420, "y": 220, "accepts": ["XOR"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_xor:0"},
+          {"from": "B:0", "to": "slot_xor:1"},
+          {"from": "slot_xor:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["XOR", "AND", "OR", "NOT"]
+    },
+    {
+      "id": "slot_nor_1",
+      "name": "Completa el NOR",
+      "prompt": "Ya tienes un OR conectado. Añade la compuerta que convierte OR en NOR.",
+      "expression": "F = ¬(A + B)",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [{"ref": "g_or", "type": "OR", "x": 320, "y": 220}],
+        "slots": [{"ref": "slot_not", "x": 580, "y": 220, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "g_or:0"},
+          {"from": "B:0", "to": "g_or:1"},
+          {"from": "g_or:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "OR", "AND"]
+    },
+    {
+      "id": "slot_halfadder_s",
+      "name": "Semi-sumador: Suma",
+      "prompt": "En un semi-sumador, la suma S = A XOR B. Coloca la compuerta correcta.",
+      "expression": "S = A ⊕ B",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 0},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_xor", "x": 440, "y": 220, "accepts": ["XOR"], "label": "S"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_xor:0"},
+          {"from": "B:0", "to": "slot_xor:1"},
+          {"from": "slot_xor:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["XOR", "AND", "OR"]
+    },
+    {
+      "id": "slot_halfadder_c",
+      "name": "Semi-sumador: Acarreo",
+      "prompt": "El acarreo de un semi-sumador es C = A AND B. Completa el circuito.",
+      "expression": "C = A · B",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 0},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_and", "x": 440, "y": 220, "accepts": ["AND"], "label": "C"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_and:0"},
+          {"from": "B:0", "to": "slot_and:1"},
+          {"from": "slot_and:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["AND", "OR", "XOR"]
+    },
+    {
+      "id": "slot_xnor_1",
+      "name": "Completa el XNOR",
+      "prompt": "XNOR es la inversa de XOR. Coloca la compuerta que falta después del XOR.",
+      "expression": "F = ¬(A ⊕ B)",
+      "difficulty": 3,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [{"ref": "g_xor", "type": "XOR", "x": 320, "y": 220}],
+        "slots": [{"ref": "slot_not", "x": 580, "y": 220, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "g_xor:0"},
+          {"from": "B:0", "to": "g_xor:1"},
+          {"from": "g_xor:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "XOR", "XNOR", "AND"]
+    },
+    {
+      "id": "slot_and_or_1",
+      "name": "AND seguido de OR",
+      "prompt": "Completa el AND. Su salida ya va conectada al OR con la señal C.",
+      "expression": "F = (A · B) + C",
+      "difficulty": 3,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 0},
+        {"A": 0, "B": 0, "C": 1, "F": 1},
+        {"A": 0, "B": 1, "C": 0, "F": 0},
+        {"A": 0, "B": 1, "C": 1, "F": 1},
+        {"A": 1, "B": 0, "C": 0, "F": 0},
+        {"A": 1, "B": 0, "C": 1, "F": 1},
+        {"A": 1, "B": 1, "C": 0, "F": 1},
+        {"A": 1, "B": 1, "C": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 140},
+          {"ref": "B", "x": 60, "y": 240},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [{"ref": "g_or", "type": "OR", "x": 620, "y": 260}],
+        "slots": [{"ref": "slot_and", "x": 300, "y": 180, "accepts": ["AND"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_and:0"},
+          {"from": "B:0", "to": "slot_and:1"},
+          {"from": "slot_and:0", "to": "g_or:0"},
+          {"from": "C:0", "to": "g_or:1"},
+          {"from": "g_or:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["AND", "OR", "NOT"]
+    },
+    {
+      "id": "slot_double_not",
+      "name": "Doble inversión",
+      "prompt": "Coloca dos NOT en cadena. ¿Qué función cumple A → NOT → NOT → F?",
+      "expression": "F = A (doble NOT)",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "F": 0},
+        {"A": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 240}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [{"ref": "g_not1", "type": "NOT", "x": 280, "y": 220}],
+        "slots": [{"ref": "slot_not2", "x": 520, "y": 220, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "g_not1:0"},
+          {"from": "g_not1:0", "to": "slot_not2:0"},
+          {"from": "slot_not2:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "AND", "OR"]
+    },
+    {
+      "id": "slot_or_three",
+      "name": "OR de tres entradas",
+      "prompt": "Completa el OR central para unir A, B y C hacia la salida F.",
+      "expression": "F = A + B + C",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 0},
+        {"A": 0, "B": 0, "C": 1, "F": 1},
+        {"A": 0, "B": 1, "C": 0, "F": 1},
+        {"A": 1, "B": 0, "C": 0, "F": 1},
+        {"A": 1, "B": 1, "C": 0, "F": 1},
+        {"A": 1, "B": 0, "C": 1, "F": 1},
+        {"A": 0, "B": 1, "C": 1, "F": 1},
+        {"A": 1, "B": 1, "C": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 140},
+          {"ref": "B", "x": 60, "y": 260},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [
+          {"ref": "g_or1", "type": "OR", "x": 280, "y": 180},
+          {"ref": "g_or2", "type": "OR", "x": 560, "y": 240}
+        ],
+        "slots": [],
+        "connections": [
+          {"from": "A:0", "to": "g_or1:0"},
+          {"from": "B:0", "to": "g_or1:1"},
+          {"from": "g_or1:0", "to": "g_or2:0"},
+          {"from": "C:0", "to": "g_or2:1"},
+          {"from": "g_or2:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["OR", "AND"]
+    },
+    {
+      "id": "slot_or_three_missing",
+      "name": "OR triple incompleto",
+      "prompt": "Falta un OR intermedio entre (A OR B) y C. Coloca la compuerta correcta.",
+      "expression": "F = (A + B) + C",
+      "difficulty": 3,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 0},
+        {"A": 0, "B": 0, "C": 1, "F": 1},
+        {"A": 0, "B": 1, "C": 0, "F": 1},
+        {"A": 1, "B": 0, "C": 0, "F": 1},
+        {"A": 1, "B": 1, "C": 0, "F": 1},
+        {"A": 1, "B": 0, "C": 1, "F": 1},
+        {"A": 0, "B": 1, "C": 1, "F": 1},
+        {"A": 1, "B": 1, "C": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 140},
+          {"ref": "B", "x": 60, "y": 260},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [{"ref": "g_or1", "type": "OR", "x": 280, "y": 180}],
+        "slots": [{"ref": "slot_or2", "x": 560, "y": 240, "accepts": ["OR"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "g_or1:0"},
+          {"from": "B:0", "to": "g_or1:1"},
+          {"from": "g_or1:0", "to": "slot_or2:0"},
+          {"from": "C:0", "to": "slot_or2:1"},
+          {"from": "slot_or2:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["OR", "AND", "NOT"]
+    },
+    {
+      "id": "slot_nand_direct",
+      "name": "NAND directo",
+      "prompt": "Coloca la compuerta NAND entre A, B y la salida F.",
+      "expression": "F = ¬(A · B)",
+      "difficulty": 1,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_nand", "x": 420, "y": 220, "accepts": ["NAND"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_nand:0"},
+          {"from": "B:0", "to": "slot_nand:1"},
+          {"from": "slot_nand:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NAND", "AND", "NOT", "OR"]
+    },
+    {
+      "id": "slot_nor_direct",
+      "name": "NOR directo",
+      "prompt": "Coloca NOR para que F sea 1 solo cuando A y B sean 0.",
+      "expression": "F = ¬(A + B)",
+      "difficulty": 1,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_nor", "x": 420, "y": 220, "accepts": ["NOR"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_nor:0"},
+          {"from": "B:0", "to": "slot_nor:1"},
+          {"from": "slot_nor:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOR", "OR", "NOT", "AND"]
+    },
+    {
+      "id": "slot_xnor_direct",
+      "name": "XNOR directo",
+      "prompt": "Coloca XNOR: salida 1 cuando A y B sean iguales.",
+      "expression": "F = A XNOR B",
+      "difficulty": 2,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [{"ref": "slot_xnor", "x": 420, "y": 220, "accepts": ["XNOR"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_xnor:0"},
+          {"from": "B:0", "to": "slot_xnor:1"},
+          {"from": "slot_xnor:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["XNOR", "XOR", "NOT", "AND"]
+    },
+    {
+      "id": "slot_and_not_b",
+      "name": "A AND (NOT B)",
+      "prompt": "B pasa por NOT antes del AND. Coloca la compuerta NOT en el espacio.",
+      "expression": "F = A · (¬B)",
+      "difficulty": 3,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 0},
+        {"A": 0, "B": 1, "F": 0},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 160}, {"ref": "B", "x": 80, "y": 320}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [{"ref": "g_and", "type": "AND", "x": 560, "y": 220}],
+        "slots": [{"ref": "slot_not", "x": 300, "y": 300, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "g_and:0"},
+          {"from": "B:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "g_and:1"},
+          {"from": "g_and:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "AND", "OR"]
+    },
+    {
+      "id": "slot_or_not_a",
+      "name": "NOT A OR B",
+      "prompt": "A se invierte antes del OR. Coloca NOT en el camino de A.",
+      "expression": "F = (¬A) + B",
+      "difficulty": 3,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 0},
+        {"A": 1, "B": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 160}, {"ref": "B", "x": 80, "y": 320}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [{"ref": "g_or", "type": "OR", "x": 560, "y": 220}],
+        "slots": [{"ref": "slot_not", "x": 300, "y": 140, "accepts": ["NOT"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "g_or:0"},
+          {"from": "B:0", "to": "g_or:1"},
+          {"from": "g_or:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["NOT", "OR", "AND"]
+    },
+    {
+      "id": "slot_two_and",
+      "name": "Cadena de AND",
+      "prompt": "Completa el primer AND. Su salida alimenta el segundo AND junto con C.",
+      "expression": "F = (A · B) · C",
+      "difficulty": 3,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 0},
+        {"A": 0, "B": 0, "C": 1, "F": 0},
+        {"A": 0, "B": 1, "C": 0, "F": 0},
+        {"A": 0, "B": 1, "C": 1, "F": 0},
+        {"A": 1, "B": 0, "C": 0, "F": 0},
+        {"A": 1, "B": 0, "C": 1, "F": 0},
+        {"A": 1, "B": 1, "C": 0, "F": 0},
+        {"A": 1, "B": 1, "C": 1, "F": 1}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 140},
+          {"ref": "B", "x": 60, "y": 240},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [{"ref": "g_and2", "type": "AND", "x": 620, "y": 260}],
+        "slots": [{"ref": "slot_and1", "x": 300, "y": 180, "accepts": ["AND"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_and1:0"},
+          {"from": "B:0", "to": "slot_and1:1"},
+          {"from": "slot_and1:0", "to": "g_and2:0"},
+          {"from": "C:0", "to": "g_and2:1"},
+          {"from": "g_and2:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["AND", "OR", "NOT"]
+    },
+    {
+      "id": "slot_xor_and",
+      "name": "XOR + AND",
+      "prompt": "Coloca XOR entre A y B. Su salida va al AND junto con C.",
+      "expression": "F = (A ⊕ B) · C",
+      "difficulty": 4,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 0},
+        {"A": 0, "B": 0, "C": 1, "F": 0},
+        {"A": 0, "B": 1, "C": 0, "F": 0},
+        {"A": 0, "B": 1, "C": 1, "F": 1},
+        {"A": 1, "B": 0, "C": 0, "F": 0},
+        {"A": 1, "B": 0, "C": 1, "F": 1},
+        {"A": 1, "B": 1, "C": 0, "F": 0},
+        {"A": 1, "B": 1, "C": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 140},
+          {"ref": "B", "x": 60, "y": 240},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [{"ref": "g_and", "type": "AND", "x": 620, "y": 260}],
+        "slots": [{"ref": "slot_xor", "x": 300, "y": 180, "accepts": ["XOR"], "label": "?"}],
+        "connections": [
+          {"from": "A:0", "to": "slot_xor:0"},
+          {"from": "B:0", "to": "slot_xor:1"},
+          {"from": "slot_xor:0", "to": "g_and:0"},
+          {"from": "C:0", "to": "g_and:1"},
+          {"from": "g_and:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["XOR", "AND", "OR", "NOT"]
+    }
+  ]
+}

@@ -1,0 +1,708 @@
+{
+    "puzzles": [
+        {
+            "id": "and_basic",
+            "name": "Compuerta AND",
+            "category": "basico",
+            "difficulty": 1,
+            "icon": "🔲",
+            "description": "Construye un circuito que implemente la función AND básica.",
+            "expression": "A AND B",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 0},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 1}
+            ],
+            "theory": "La compuerta AND (Y lógico) produce una salida HIGH (1) únicamente cuando TODAS sus entradas son HIGH (1). Es equivalente a la multiplicación en Álgebra de Boole: F = A · B. En la vida real, es como dos interruptores en serie: ambos deben estar cerrados para que pase la corriente.",
+            "hints": [
+                "Solo necesitas una compuerta para este ejercicio.",
+                "Busca la compuerta AND en el panel lateral.",
+                "Conecta la entrada A al primer pin y la entrada B al segundo pin de la compuerta AND."
+            ],
+            "common_errors": [
+                "Confundir AND con OR: AND requiere TODAS las entradas en HIGH, OR requiere AL MENOS UNA.",
+                "Invertir las conexiones de entrada y salida."
+            ],
+            "solution_steps": [
+                "Paso 1: Arrastra una compuerta AND al área de trabajo.",
+                "Paso 2: Conecta la señal A al primer pin de entrada (arriba).",
+                "Paso 3: Conecta la señal B al segundo pin de entrada (abajo).",
+                "Paso 4: Conecta la salida de la compuerta AND al LED de salida F.",
+                "Paso 5: Verifica con la tabla de verdad: F = 1 solo cuando A = 1 Y B = 1."
+            ]
+        },
+        {
+            "id": "or_basic",
+            "name": "Compuerta OR",
+            "category": "basico",
+            "difficulty": 1,
+            "icon": "🔳",
+            "description": "Construye un circuito que implemente la función OR básica.",
+            "expression": "A OR B",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 1},
+                {"A": 1, "B": 1, "F": 1}
+            ],
+            "theory": "La compuerta OR (O lógico) produce una salida HIGH (1) cuando AL MENOS UNA de sus entradas es HIGH (1). Es equivalente a la suma en Álgebra de Boole: F = A + B. En la vida real, es como dos interruptores en paralelo: basta con que uno esté cerrado para que pase la corriente.",
+            "hints": [
+                "Solo necesitas una compuerta para este ejercicio.",
+                "Busca la compuerta OR en el panel lateral.",
+                "Conecta A y B a las entradas de la compuerta OR."
+            ],
+            "common_errors": [
+                "Confundir OR con AND: OR necesita al menos una entrada en HIGH.",
+                "Usar una compuerta XOR en lugar de OR (XOR da 0 cuando ambas entradas son 1)."
+            ],
+            "solution_steps": [
+                "Paso 1: Arrastra una compuerta OR al área de trabajo.",
+                "Paso 2: Conecta A al primer pin de entrada.",
+                "Paso 3: Conecta B al segundo pin de entrada.",
+                "Paso 4: Conecta la salida al LED F.",
+                "Paso 5: Verifica: F = 1 cuando A = 1 O B = 1 (o ambos)."
+            ]
+        },
+        {
+            "id": "not_basic",
+            "name": "Compuerta NOT",
+            "category": "basico",
+            "difficulty": 1,
+            "icon": "🔄",
+            "description": "Construye un circuito que invierta la señal de entrada.",
+            "expression": "NOT A",
+            "inputs": ["A"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "F": 1},
+                {"A": 1, "F": 0}
+            ],
+            "theory": "La compuerta NOT (inversor) produce la salida CONTRARIA a su entrada. Si la entrada es HIGH (1), la salida es LOW (0) y viceversa. Es equivalente al complemento en Álgebra de Boole: F = Ā. Solo tiene UNA entrada y UNA salida.",
+            "hints": [
+                "Solo necesitas una compuerta NOT (inversor).",
+                "La compuerta NOT tiene solo UNA entrada.",
+                "Conecta A a la entrada y la salida al LED F."
+            ],
+            "common_errors": [
+                "Usar una compuerta de dos entradas cuando NOT solo tiene una.",
+                "Olvidar que NOT invierte el valor: 0 → 1, 1 → 0."
+            ],
+            "solution_steps": [
+                "Paso 1: Arrastra una compuerta NOT al área de trabajo.",
+                "Paso 2: Conecta la señal A a la única entrada de la compuerta NOT.",
+                "Paso 3: Conecta la salida al LED F.",
+                "Paso 4: Verifica: cuando A = 0, F = 1 y cuando A = 1, F = 0."
+            ]
+        },
+        {
+            "id": "nand_basic",
+            "name": "Compuerta NAND",
+            "category": "intermedio",
+            "difficulty": 2,
+            "icon": "⚡",
+            "description": "Construye un circuito NAND (NOT AND).",
+            "expression": "NOT(A AND B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "NAND"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 1},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 1},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "NAND es la compuerta AND seguida de NOT. Su salida es LOW (0) solo cuando TODAS las entradas son HIGH (1). Es una compuerta UNIVERSAL: con ella sola se puede construir cualquier otra compuerta lógica. F = ¬(A · B).",
+            "hints": [
+                "NAND = AND + NOT. Puedes usar una compuerta NAND directamente o combinar AND con NOT.",
+                "Si usas AND + NOT: la salida del AND va a la entrada del NOT.",
+                "La tabla NAND es la inversa de AND."
+            ],
+            "common_errors": [
+                "Confundir NAND con NOR.",
+                "Olvidar que NAND da 1 cuando al menos una entrada es 0."
+            ],
+            "solution_steps": [
+                "Opción A: Arrastra una compuerta NAND, conecta A y B.",
+                "Opción B: Usa AND → NOT (conecta la salida del AND a la entrada del NOT).",
+                "Verifica: F = 0 SOLO cuando A = 1 Y B = 1."
+            ]
+        },
+        {
+            "id": "nor_basic",
+            "name": "Compuerta NOR",
+            "category": "intermedio",
+            "difficulty": 2,
+            "icon": "⚡",
+            "description": "Construye un circuito NOR (NOT OR).",
+            "expression": "NOT(A OR B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "NOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 1},
+                {"A": 0, "B": 1, "F": 0},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "NOR es la compuerta OR seguida de NOT. Su salida es HIGH (1) solo cuando TODAS las entradas son LOW (0). También es una compuerta UNIVERSAL. F = ¬(A + B).",
+            "hints": [
+                "NOR = OR + NOT.",
+                "Puedes usar una compuerta NOR directamente.",
+                "La tabla NOR es la inversa de OR."
+            ],
+            "common_errors": [
+                "Confundir NOR con NAND.",
+                "NOR da 1 solo cuando AMBAS entradas son 0."
+            ],
+            "solution_steps": [
+                "Opción A: Arrastra una compuerta NOR, conecta A y B.",
+                "Opción B: Usa OR → NOT.",
+                "Verifica: F = 1 SOLO cuando A = 0 Y B = 0."
+            ]
+        },
+        {
+            "id": "xor_basic",
+            "name": "Compuerta XOR",
+            "category": "intermedio",
+            "difficulty": 2,
+            "icon": "⊕",
+            "description": "Construye un circuito XOR (OR exclusivo).",
+            "expression": "A XOR B",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 1},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "La compuerta XOR (OR exclusivo) produce una salida HIGH (1) cuando las entradas son DIFERENTES. Si ambas son iguales (ambas 0 o ambas 1), la salida es LOW (0). F = A ⊕ B. Es fundamental en circuitos aritméticos como el sumador.",
+            "hints": [
+                "XOR da 1 cuando las entradas son diferentes.",
+                "Puedes usar una compuerta XOR directamente.",
+                "XOR también puede implementarse como: (A AND NOT B) OR (NOT A AND B)."
+            ],
+            "common_errors": [
+                "Confundir XOR con OR: la diferencia es que XOR da 0 cuando ambas entradas son 1.",
+                "No es lo mismo que XNOR (que da 1 cuando son iguales)."
+            ],
+            "solution_steps": [
+                "Paso 1: Arrastra una compuerta XOR al área de trabajo.",
+                "Paso 2: Conecta A y B a las entradas.",
+                "Paso 3: Conecta la salida al LED F.",
+                "Verifica: F = 1 cuando A ≠ B."
+            ]
+        },
+        {
+            "id": "xnor_basic",
+            "name": "Compuerta XNOR",
+            "category": "intermedio",
+            "difficulty": 2,
+            "icon": "⊙",
+            "description": "Construye un circuito XNOR (equivalencia lógica).",
+            "expression": "NOT(A XOR B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR", "XNOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 1},
+                {"A": 0, "B": 1, "F": 0},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 1}
+            ],
+            "theory": "La compuerta XNOR (equivalencia) produce una salida HIGH (1) cuando las entradas son IGUALES. Es el complemento de XOR. F = ¬(A ⊕ B) = A ⊙ B. Se usa como comparador básico de un bit.",
+            "hints": [
+                "XNOR = NOT XOR. Da 1 cuando las entradas son iguales.",
+                "Puedes usar XNOR directamente o combinar XOR con NOT.",
+                "Piensa en XNOR como un detector de igualdad."
+            ],
+            "common_errors": [
+                "Confundir XNOR con XOR.",
+                "XNOR da 1 cuando A = B, no cuando son diferentes."
+            ],
+            "solution_steps": [
+                "Opción A: Usa una compuerta XNOR directamente.",
+                "Opción B: Usa XOR → NOT.",
+                "Verifica: F = 1 cuando A = B."
+            ]
+        },
+        {
+            "id": "and_or_combo",
+            "name": "AND-OR Combinado",
+            "category": "combinaciones",
+            "difficulty": 3,
+            "icon": "🔗",
+            "description": "Construye: F = (A AND B) OR C",
+            "expression": "(A AND B) OR C",
+            "inputs": ["A", "B", "C"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "C": 0, "F": 0},
+                {"A": 0, "B": 0, "C": 1, "F": 1},
+                {"A": 0, "B": 1, "C": 0, "F": 0},
+                {"A": 0, "B": 1, "C": 1, "F": 1},
+                {"A": 1, "B": 0, "C": 0, "F": 0},
+                {"A": 1, "B": 0, "C": 1, "F": 1},
+                {"A": 1, "B": 1, "C": 0, "F": 1},
+                {"A": 1, "B": 1, "C": 1, "F": 1}
+            ],
+            "theory": "Este circuito combina dos compuertas: primero se calcula A AND B, y luego el resultado se combina con C usando OR. La precedencia es importante: AND se evalúa antes que OR (como multiplicación antes que suma). F = (A · B) + C.",
+            "hints": [
+                "Necesitas dos compuertas: una AND y una OR.",
+                "Primero conecta A y B a la compuerta AND.",
+                "Luego conecta la salida del AND y C a la compuerta OR."
+            ],
+            "common_errors": [
+                "Conectar las tres entradas a una sola compuerta.",
+                "Invertir el orden: primero AND, luego OR."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca una compuerta AND y una OR.",
+                "Paso 2: Conecta A y B a las entradas de la AND.",
+                "Paso 3: Conecta la salida de la AND al primer pin de la OR.",
+                "Paso 4: Conecta C al segundo pin de la OR.",
+                "Paso 5: La salida de la OR es F."
+            ]
+        },
+        {
+            "id": "not_and_combo",
+            "name": "NOT-AND Combinado",
+            "category": "combinaciones",
+            "difficulty": 3,
+            "icon": "🔗",
+            "description": "Construye: F = (NOT A) AND B",
+            "expression": "(NOT A) AND B",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "Este circuito primero invierte A con NOT, y luego combina el resultado con B usando AND. F = Ā · B. La salida es 1 solo cuando A es 0 Y B es 1.",
+            "hints": [
+                "Necesitas dos compuertas: NOT y AND.",
+                "Primero invierte A con NOT.",
+                "Luego usa AND con el resultado del NOT y B."
+            ],
+            "common_errors": [
+                "Invertir B en lugar de A.",
+                "Olvidar que NOT A significa el complemento de A."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca NOT y AND en el workspace.",
+                "Paso 2: Conecta A a la entrada del NOT.",
+                "Paso 3: Conecta la salida del NOT al primer pin del AND.",
+                "Paso 4: Conecta B al segundo pin del AND.",
+                "Paso 5: La salida del AND es F."
+            ]
+        },
+        {
+            "id": "complex_and_or_not",
+            "name": "Expresión Compleja",
+            "category": "combinaciones",
+            "difficulty": 3,
+            "icon": "🔗",
+            "description": "Construye: F = (A AND B) OR (NOT C)",
+            "expression": "(A AND B) OR (NOT C)",
+            "inputs": ["A", "B", "C"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "C": 0, "F": 1},
+                {"A": 0, "B": 0, "C": 1, "F": 0},
+                {"A": 0, "B": 1, "C": 0, "F": 1},
+                {"A": 0, "B": 1, "C": 1, "F": 0},
+                {"A": 1, "B": 0, "C": 0, "F": 1},
+                {"A": 1, "B": 0, "C": 1, "F": 0},
+                {"A": 1, "B": 1, "C": 0, "F": 1},
+                {"A": 1, "B": 1, "C": 1, "F": 1}
+            ],
+            "theory": "Este circuito tiene dos ramas paralelas: A AND B genera un resultado, NOT C genera otro, y ambos se combinan con OR. F = (A · B) + C̄. Representa un patrón común en diseño digital.",
+            "hints": [
+                "Necesitas tres compuertas: AND, NOT y OR.",
+                "Divide el problema: calcula (A AND B) por un lado y (NOT C) por otro.",
+                "Combina ambos resultados con OR."
+            ],
+            "common_errors": [
+                "No separar las ramas del circuito.",
+                "Conectar C directamente al OR sin invertirlo."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca AND, NOT y OR.",
+                "Paso 2: Conecta A y B al AND.",
+                "Paso 3: Conecta C al NOT.",
+                "Paso 4: Conecta la salida del AND al primer pin del OR.",
+                "Paso 5: Conecta la salida del NOT al segundo pin del OR.",
+                "Paso 6: La salida del OR es F."
+            ]
+        },
+        {
+            "id": "demorgan_and",
+            "name": "Teorema De Morgan (AND)",
+            "category": "combinaciones",
+            "difficulty": 3,
+            "icon": "📐",
+            "description": "Demuestra que NOT(A AND B) = (NOT A) OR (NOT B)",
+            "expression": "(NOT A) OR (NOT B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 1},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 1},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "El Primer Teorema de De Morgan establece: ¬(A · B) = Ā + B̄. La negación de un AND es equivalente al OR de las negaciones individuales. Este teorema es fundamental para simplificar circuitos y demuestra la dualidad entre AND y OR.",
+            "hints": [
+                "Necesitas implementar (NOT A) OR (NOT B), que es equivalente a NAND.",
+                "Usa dos compuertas NOT y una OR.",
+                "Invierte cada variable por separado, luego combina con OR."
+            ],
+            "common_errors": [
+                "Aplicar NOT después de OR en lugar de antes.",
+                "Confundir el primer teorema con el segundo (NOR)."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca dos NOT y un OR.",
+                "Paso 2: Conecta A al primer NOT.",
+                "Paso 3: Conecta B al segundo NOT.",
+                "Paso 4: Conecta ambas salidas NOT al OR.",
+                "Verifica que la tabla coincide con NAND."
+            ]
+        },
+        {
+            "id": "demorgan_or",
+            "name": "Teorema De Morgan (OR)",
+            "category": "combinaciones",
+            "difficulty": 3,
+            "icon": "📐",
+            "description": "Demuestra que NOT(A OR B) = (NOT A) AND (NOT B)",
+            "expression": "(NOT A) AND (NOT B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 1},
+                {"A": 0, "B": 1, "F": 0},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "El Segundo Teorema de De Morgan establece: ¬(A + B) = Ā · B̄. La negación de un OR es equivalente al AND de las negaciones individuales. Junto con el primer teorema, permite transformar cualquier expresión entre formas AND-OR.",
+            "hints": [
+                "Implementa (NOT A) AND (NOT B), equivalente a NOR.",
+                "Usa dos NOT y un AND.",
+                "Invierte cada variable, luego combina con AND."
+            ],
+            "common_errors": [
+                "Confundir el segundo teorema con el primero.",
+                "Invertir el AND por OR."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca dos NOT y un AND.",
+                "Paso 2: Invierte A y B por separado.",
+                "Paso 3: Conecta ambas salidas al AND.",
+                "Verifica que la tabla coincide con NOR."
+            ]
+        },
+        {
+            "id": "xor_with_basics",
+            "name": "XOR con Compuertas Básicas",
+            "category": "avanzado",
+            "difficulty": 4,
+            "icon": "🧩",
+            "description": "Implementa XOR usando solo AND, OR y NOT.",
+            "expression": "(A AND (NOT B)) OR ((NOT A) AND B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 1},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "XOR puede implementarse con compuertas básicas: A ⊕ B = (A · B̄) + (Ā · B). Esto demuestra que las compuertas AND, OR y NOT son un conjunto completo: con ellas se puede construir cualquier función lógica.",
+            "hints": [
+                "La fórmula es: (A AND NOT B) OR (NOT A AND B).",
+                "Necesitas 2 NOT, 2 AND y 1 OR.",
+                "Piensa en dos ramas: una para cuando A=1,B=0 y otra para A=0,B=1."
+            ],
+            "common_errors": [
+                "No invertir correctamente las variables en cada rama.",
+                "Conectar las compuertas en orden incorrecto."
+            ],
+            "solution_steps": [
+                "Paso 1: Crea NOT A y NOT B.",
+                "Paso 2: AND1 = A AND (NOT B).",
+                "Paso 3: AND2 = (NOT A) AND B.",
+                "Paso 4: F = AND1 OR AND2."
+            ]
+        },
+        {
+            "id": "half_adder_sum",
+            "name": "Semi-Sumador (Suma)",
+            "category": "circuitos",
+            "difficulty": 4,
+            "icon": "➕",
+            "description": "Construye la salida SUMA de un semi-sumador: S = A XOR B",
+            "expression": "A XOR B",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 1},
+                {"A": 1, "B": 0, "F": 1},
+                {"A": 1, "B": 1, "F": 0}
+            ],
+            "theory": "El semi-sumador (half adder) es el circuito aritmético más básico. Suma dos bits y produce dos salidas: Suma (S) y Acarreo (C). La Suma es A XOR B: da 1 cuando los bits son diferentes (como sumar 0+1=1 o 1+0=1). Cuando ambos son 1, la suma binaria es 10, así que S=0 y el acarreo C=1.",
+            "hints": [
+                "La suma de un semi-sumador es simplemente XOR.",
+                "S = A ⊕ B.",
+                "Recuerda: 1+1 en binario = 10, así que S=0 y Carry=1."
+            ],
+            "common_errors": [
+                "Usar OR en lugar de XOR para la suma.",
+                "Confundir suma con acarreo."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca una compuerta XOR.",
+                "Paso 2: Conecta A y B a las entradas.",
+                "Paso 3: La salida XOR es la Suma.",
+                "Verifica: S = 1 cuando A ≠ B."
+            ]
+        },
+        {
+            "id": "half_adder_carry",
+            "name": "Semi-Sumador (Acarreo)",
+            "category": "circuitos",
+            "difficulty": 4,
+            "icon": "➕",
+            "description": "Construye la salida ACARREO de un semi-sumador: C = A AND B",
+            "expression": "A AND B",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 0},
+                {"A": 0, "B": 1, "F": 0},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 1}
+            ],
+            "theory": "El acarreo (carry) del semi-sumador es simplemente A AND B. Solo se genera acarreo cuando ambos bits son 1 (1+1 = 10 en binario). El acarreo se propaga a la siguiente posición de bit, como en la suma decimal cuando 5+5=10.",
+            "hints": [
+                "El acarreo es simplemente AND.",
+                "C = A · B.",
+                "Solo hay acarreo cuando ambos bits son 1."
+            ],
+            "common_errors": [
+                "Confundir acarreo con suma.",
+                "Usar OR en lugar de AND."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca una compuerta AND.",
+                "Paso 2: Conecta A y B.",
+                "Paso 3: La salida AND es el Acarreo.",
+                "Verifica: C = 1 solo cuando A = 1 Y B = 1."
+            ]
+        },
+        {
+            "id": "full_adder_sum",
+            "name": "Sumador Completo (Suma)",
+            "category": "circuitos",
+            "difficulty": 5,
+            "icon": "🔢",
+            "description": "Construye la SUMA del sumador completo: S = A XOR B XOR Cin",
+            "expression": "(A XOR B) XOR C",
+            "inputs": ["A", "B", "C"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "C": 0, "F": 0},
+                {"A": 0, "B": 0, "C": 1, "F": 1},
+                {"A": 0, "B": 1, "C": 0, "F": 1},
+                {"A": 0, "B": 1, "C": 1, "F": 0},
+                {"A": 1, "B": 0, "C": 0, "F": 1},
+                {"A": 1, "B": 0, "C": 1, "F": 0},
+                {"A": 1, "B": 1, "C": 0, "F": 0},
+                {"A": 1, "B": 1, "C": 1, "F": 1}
+            ],
+            "theory": "El sumador completo (full adder) suma tres bits: A, B y un acarreo de entrada (Cin). La suma es el XOR de los tres: S = A ⊕ B ⊕ Cin. Esto se implementa con dos XOR en cascada: primero A XOR B, luego el resultado XOR Cin.",
+            "hints": [
+                "Necesitas dos compuertas XOR en cascada.",
+                "Primero calcula A XOR B.",
+                "Luego aplica XOR con Cin (aquí llamado C)."
+            ],
+            "common_errors": [
+                "Intentar hacer XOR de 3 entradas con una sola compuerta.",
+                "Confundir la suma del sumador completo con el acarreo."
+            ],
+            "solution_steps": [
+                "Paso 1: Coloca dos XOR.",
+                "Paso 2: XOR1 = A XOR B.",
+                "Paso 3: XOR2 = XOR1 XOR C (Cin).",
+                "Paso 4: La salida de XOR2 es S."
+            ]
+        },
+        {
+            "id": "full_adder_carry",
+            "name": "Sumador Completo (Acarreo)",
+            "category": "circuitos",
+            "difficulty": 5,
+            "icon": "🔢",
+            "description": "Construye el ACARREO del sumador completo: Cout = (A AND B) OR ((A XOR B) AND Cin)",
+            "expression": "(A AND B) OR ((A XOR B) AND C)",
+            "inputs": ["A", "B", "C"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "C": 0, "F": 0},
+                {"A": 0, "B": 0, "C": 1, "F": 0},
+                {"A": 0, "B": 1, "C": 0, "F": 0},
+                {"A": 0, "B": 1, "C": 1, "F": 1},
+                {"A": 1, "B": 0, "C": 0, "F": 0},
+                {"A": 1, "B": 0, "C": 1, "F": 1},
+                {"A": 1, "B": 1, "C": 0, "F": 1},
+                {"A": 1, "B": 1, "C": 1, "F": 1}
+            ],
+            "theory": "El acarreo de salida del sumador completo es: Cout = (A · B) + ((A ⊕ B) · Cin). Hay acarreo cuando al menos dos de los tres bits son 1. El circuito tiene dos ramas: (A AND B) para cuando ambos son 1 directamente, y ((A XOR B) AND Cin) para cuando uno de A/B y Cin son 1.",
+            "hints": [
+                "Cout = (A AND B) OR ((A XOR B) AND Cin).",
+                "Necesitas: 1 XOR, 2 AND y 1 OR.",
+                "Divide en dos ramas: (A AND B) y ((A XOR B) AND C)."
+            ],
+            "common_errors": [
+                "Simplificar incorrectamente la expresión.",
+                "Olvidar la segunda rama del acarreo."
+            ],
+            "solution_steps": [
+                "Paso 1: AND1 = A AND B.",
+                "Paso 2: XOR1 = A XOR B.",
+                "Paso 3: AND2 = XOR1 AND C.",
+                "Paso 4: F = AND1 OR AND2."
+            ]
+        },
+        {
+            "id": "mux_2to1",
+            "name": "Multiplexor 2:1",
+            "category": "circuitos",
+            "difficulty": 5,
+            "icon": "🔀",
+            "description": "Construye un MUX 2:1: F = (NOT S AND A) OR (S AND B)",
+            "expression": "((NOT S) AND A) OR (S AND B)",
+            "inputs": ["A", "B", "S"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "S": 0, "F": 0},
+                {"A": 0, "B": 0, "S": 1, "F": 0},
+                {"A": 0, "B": 1, "S": 0, "F": 0},
+                {"A": 0, "B": 1, "S": 1, "F": 1},
+                {"A": 1, "B": 0, "S": 0, "F": 1},
+                {"A": 1, "B": 0, "S": 1, "F": 0},
+                {"A": 1, "B": 1, "S": 0, "F": 1},
+                {"A": 1, "B": 1, "S": 1, "F": 1}
+            ],
+            "theory": "Un multiplexor 2:1 (MUX) selecciona entre dos entradas (A y B) usando una señal de selección (S). Cuando S=0, la salida es A. Cuando S=1, la salida es B. F = (S̄ · A) + (S · B). Es como un interruptor controlado digitalmente.",
+            "hints": [
+                "F = (NOT S AND A) OR (S AND B).",
+                "Necesitas: 1 NOT, 2 AND y 1 OR.",
+                "S selecciona: S=0 → A, S=1 → B."
+            ],
+            "common_errors": [
+                "Invertir la selección (S=0 debería dar A).",
+                "No invertir S para la rama de A."
+            ],
+            "solution_steps": [
+                "Paso 1: NOT1 = NOT S.",
+                "Paso 2: AND1 = NOT1 AND A (rama para S=0).",
+                "Paso 3: AND2 = S AND B (rama para S=1).",
+                "Paso 4: F = AND1 OR AND2."
+            ]
+        },
+        {
+            "id": "comparator_equal",
+            "name": "Comparador de Igualdad",
+            "category": "circuitos",
+            "difficulty": 5,
+            "icon": "⚖️",
+            "description": "Construye un comparador: F = 1 cuando A = B (XNOR)",
+            "expression": "NOT(A XOR B)",
+            "inputs": ["A", "B"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT", "XOR", "XNOR"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "F": 1},
+                {"A": 0, "B": 1, "F": 0},
+                {"A": 1, "B": 0, "F": 0},
+                {"A": 1, "B": 1, "F": 1}
+            ],
+            "theory": "Un comparador de igualdad de 1 bit verifica si dos bits son iguales. Usa la compuerta XNOR: F = A ⊙ B = ¬(A ⊕ B). Da 1 cuando A = B y 0 cuando A ≠ B. Para comparar números de múltiples bits, se conectan varios comparadores con AND.",
+            "hints": [
+                "XNOR es un comparador natural: da 1 cuando las entradas son iguales.",
+                "Puedes usar XNOR directamente o XOR seguido de NOT.",
+                "Recuerda: XNOR es la negación de XOR."
+            ],
+            "common_errors": [
+                "Usar XOR sin invertir (XOR da 1 cuando son diferentes).",
+                "Confundir con un detector de diferencia."
+            ],
+            "solution_steps": [
+                "Opción A: Usa una compuerta XNOR directamente.",
+                "Opción B: XOR → NOT.",
+                "Verifica: F = 1 cuando A = B."
+            ]
+        },
+        {
+            "id": "or_three_inputs",
+            "name": "OR de Tres Entradas",
+            "category": "combinaciones",
+            "difficulty": 3,
+            "icon": "🔗",
+            "description": "Construye: F = A OR B OR C usando compuertas de 2 entradas.",
+            "expression": "(A OR B) OR C",
+            "inputs": ["A", "B", "C"],
+            "outputs": ["F"],
+            "available_gates": ["AND", "OR", "NOT"],
+            "expected_truth_table": [
+                {"A": 0, "B": 0, "C": 0, "F": 0},
+                {"A": 0, "B": 0, "C": 1, "F": 1},
+                {"A": 0, "B": 1, "C": 0, "F": 1},
+                {"A": 0, "B": 1, "C": 1, "F": 1},
+                {"A": 1, "B": 0, "C": 0, "F": 1},
+                {"A": 1, "B": 0, "C": 1, "F": 1},
+                {"A": 1, "B": 1, "C": 0, "F": 1},
+                {"A": 1, "B": 1, "C": 1, "F": 1}
+            ],
+            "theory": "Cuando necesitamos una operación OR con más de 2 entradas, debemos conectar compuertas OR de 2 entradas en cascada. Primero hacemos A OR B, luego el resultado OR C. El OR es asociativo: (A+B)+C = A+(B+C).",
+            "hints": [
+                "Necesitas dos compuertas OR.",
+                "OR1 = A OR B, luego OR2 = OR1 OR C.",
+                "OR es asociativo, el orden no importa."
+            ],
+            "common_errors": [
+                "Intentar conectar 3 cables a una compuerta de 2 entradas.",
+                "No usar cascada de compuertas."
+            ],
+            "solution_steps": [
+                "Paso 1: OR1 conecta A y B.",
+                "Paso 2: OR2 conecta la salida de OR1 y C.",
+                "Paso 3: La salida de OR2 es F."
+            ]
+        }
+    ]
+}

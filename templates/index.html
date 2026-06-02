@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="LogicPuzzle Lab - Simulador interactivo y rompecabezas de Lógica Combinacional y Álgebra de Boole para estudiantes universitarios.">
+    <meta name="keywords" content="lógica combinacional, álgebra de boole, compuertas lógicas, simulador, educación, circuitos digitales">
+    <meta name="author" content="Universidad Técnica de Ambato">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>LogicPuzzle Lab - Simulador de Lógica Combinacional</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ═══════════════════════════════════════════
+             SPLASH SCREEN
+             ═══════════════════════════════════════════ -->
+        <div id="splash-screen">
+            <div class="splash-logo">🔬</div>
+            <h1 class="splash-title">LogicPuzzle Lab</h1>
+            <p class="splash-subtitle">Simulador y Rompecabezas de Lógica Combinacional</p>
+            <div class="splash-loader">
+                <div class="splash-loader-bar"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             MAIN MENU
+             ═══════════════════════════════════════════ -->
+        <div id="main-menu" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">🔬</span>
+                    <span class="navbar-title">LogicPuzzle Lab</span>
+                </div>
+                <div class="navbar-controls">
+                    <button class="btn btn-icon btn-ghost" id="sound-toggle" title="Sonido">🔊</button>
+                </div>
+            </nav>
+
+            <div class="menu-container">
+                <div class="menu-hero">
+                    <div class="menu-hero-icon">🧩</div>
+                    <h1>LogicPuzzle Lab</h1>
+                    <p>Aprende, practica y domina la Lógica Combinacional de forma interactiva</p>
+                </div>
+
+                <div class="menu-grid">
+                    <div class="menu-card" data-screen="learning-screen" id="card-learn">
+                        <span class="menu-card-icon">📚</span>
+                        <h3 class="menu-card-title">Aprender</h3>
+                        <p class="menu-card-desc">Teoría paso a paso sobre compuertas y álgebra booleana</p>
+                    </div>
+                    <div class="menu-card" data-screen="puzzle-screen" id="card-puzzle">
+                        <span class="menu-card-icon">🧩</span>
+                        <h3 class="menu-card-title">Puzzles</h3>
+                        <p class="menu-card-desc">Resuelve rompecabezas de circuitos por niveles</p>
+                    </div>
+                    <div class="menu-card" data-screen="free-screen" id="card-free">
+                        <span class="menu-card-icon">🔧</span>
+                        <h3 class="menu-card-title">Modo Libre</h3>
+                        <p class="menu-card-desc">Construye cualquier circuito y experimenta</p>
+                    </div>
+                    <div class="menu-card" data-screen="exam-screen" id="card-exam">
+                        <span class="menu-card-icon">🎮</span>
+                        <h3 class="menu-card-title">Examen Kahoot</h3>
+                        <p class="menu-card-desc">Compite en vivo con 15 preguntas multijugador</p>
+                    </div>
+                    <div class="menu-card" data-screen="calculator-screen" id="card-calc">
+                        <span class="menu-card-icon">🔢</span>
+                        <h3 class="menu-card-title">Calculadora</h3>
+                        <p class="menu-card-desc">Genera tablas de verdad desde expresiones booleanas</p>
+                    </div>
+                    <div class="menu-card" data-screen="history-screen" id="card-history">
+                        <span class="menu-card-icon">📊</span>
+                        <h3 class="menu-card-title">Historial</h3>
+                        <p class="menu-card-desc">Revisa tu progreso y puntuaciones</p>
+                    </div>
+                </div>
+
+                <div class="menu-footer">
+                    <p>Universidad Técnica de Ambato · Lógica Combinacional · Álgebra de Boole</p>
+                    <p style="margin-top:0.25rem;">Basado en: <em>Fundamentos de Sistemas Digitales</em> – Thomas L. Floyd, 9na edición</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             LEARNING SCREEN
+             ═══════════════════════════════════════════ -->
+        <div id="learning-screen" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">🔬</span>
+                    <span class="navbar-title">LogicPuzzle Lab</span>
+                </div>
+                <ul class="navbar-nav">
+                    <li><button class="nav-btn" data-screen="main-menu">← Menú</button></li>
+                    <li><button class="nav-btn active" data-screen="learning-screen">📚 Aprender</button></li>
+                    <li><button class="nav-btn" data-screen="puzzle-screen">🧩 Puzzles</button></li>
+                    <li><button class="nav-btn" data-screen="free-screen">🔧 Libre</button></li>
+                    <li><button class="nav-btn" data-screen="calculator-screen">🔢 Calculadora</button></li>
+                </ul>
+                <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
+                    <button class="btn btn-icon btn-ghost" id="sound-toggle-2" title="Sonido">🔊</button>
+                </div>
+            </nav>
+
+            <div class="learning-container" id="learning-content">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             PUZZLE LIST SCREEN
+             ═══════════════════════════════════════════ -->
+        <div id="puzzle-screen" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">🔬</span>
+                    <span class="navbar-title">LogicPuzzle Lab</span>
+                </div>
+                <ul class="navbar-nav">
+                    <li><button class="nav-btn" data-screen="main-menu">← Menú</button></li>
+                    <li><button class="nav-btn" data-screen="learning-screen">📚 Aprender</button></li>
+                    <li><button class="nav-btn active" data-screen="puzzle-screen">🧩 Puzzles</button></li>
+                    <li><button class="nav-btn" data-screen="free-screen">🔧 Libre</button></li>
+                    <li><button class="nav-btn" data-screen="calculator-screen">🔢 Calculadora</button></li>
+                </ul>
+                <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
+                    <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
+                </div>
+            </nav>
+
+            <div class="puzzle-list">
+                <h2>🧩 Puzzles Interactivos</h2>
+                <p class="puzzle-list-subtitle">Selecciona un rompecabezas para comenzar</p>
+                <div id="puzzle-list-content">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             WORKSPACE SCREEN (Puzzle/Free/Exam)
+             ═══════════════════════════════════════════ -->
+        <div id="workspace-screen" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand" style="cursor:default">
+                    <button class="btn btn-ghost btn-sm" id="back-btn">← Volver</button>
+                </div>
+                <div class="puzzle-info-bar" style="flex:1; border:none; background:none; padding: 0 1rem;">
+                    <h3 id="puzzle-name" style="margin-right:1rem;"></h3>
+                    <span class="puzzle-expression" id="puzzle-expression"></span>
+                </div>
+                <div class="navbar-controls">
+                    <div class="timer">
+                        <span>⏱</span>
+                        <span id="puzzle-timer">00:00</span>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
+                </div>
+            </nav>
+
+            <div class="workspace-layout">
+                <!-- Left: Gate Palette -->
+                <aside class="gate-palette" id="gate-palette">
+                    <div class="palette-title">Compuertas</div>
+                    <!-- Populated by JS -->
+                </aside>
+
+                <!-- Center: Circuit Workspace -->
+                <main class="circuit-workspace">
+                    <svg id="circuit-svg" class="circuit-svg"></svg>
+                </main>
+
+                <!-- Right: Info Panel -->
+                <aside class="info-panel">
+                    <div class="info-section">
+                        <div class="info-section-title">📋 Problema</div>
+                        <p id="info-theory"></p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-section-title">📊 Tabla de Verdad</div>
+                        <div id="info-truth-table"></div>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-section-title">💡 Pistas</div>
+                        <div id="info-hints">
+                            <p class="text-muted">Haz clic en "Pista" para obtener ayuda.</p>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Bottom: Toolbar -->
+                <footer class="toolbar">
+                    <div class="toolbar-group">
+                        <button class="btn btn-success" id="verify-btn">✓ Verificar</button>
+                        <button class="btn btn-outline" id="hint-btn">💡 Pista</button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="btn btn-ghost" id="reset-btn">🔄 Reiniciar</button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             EXAM SCREEN
+             ═══════════════════════════════════════════ -->
+        <div id="exam-screen" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">🔬</span>
+                    <span class="navbar-title">LogicPuzzle Lab</span>
+                </div>
+                <ul class="navbar-nav">
+                    <li><button class="nav-btn" data-screen="main-menu">← Menú</button></li>
+                    <li><button class="nav-btn" data-screen="puzzle-screen">🧩 Puzzles</button></li>
+                    <li><button class="nav-btn active" data-screen="exam-screen">🎮 Examen</button></li>
+                </ul>
+                <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
+                    <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
+                </div>
+            </nav>
+
+            <div id="exam-content">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             CALCULATOR SCREEN
+             ═══════════════════════════════════════════ -->
+        <div id="calculator-screen" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">🔬</span>
+                    <span class="navbar-title">LogicPuzzle Lab</span>
+                </div>
+                <ul class="navbar-nav">
+                    <li><button class="nav-btn" data-screen="main-menu">← Menú</button></li>
+                    <li><button class="nav-btn" data-screen="learning-screen">📚 Aprender</button></li>
+                    <li><button class="nav-btn" data-screen="puzzle-screen">🧩 Puzzles</button></li>
+                    <li><button class="nav-btn active" data-screen="calculator-screen">🔢 Calculadora</button></li>
+                </ul>
+                <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
+                    <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
+                </div>
+            </nav>
+
+            <div class="calculator-container">
+                <h2 class="text-center mb-2">🔢 Calculadora Booleana</h2>
+                <p class="text-center text-secondary mb-3">Ingresa una expresión booleana para generar su tabla de verdad.</p>
+
+                <div class="calculator-input-group">
+                    <label for="calc-input">Expresión Booleana</label>
+                    <div class="calculator-input-row">
+                        <input type="text" id="calc-input" class="calculator-input"
+                               placeholder="Ej: (A AND B) OR (NOT C)"
+                               autocomplete="off" spellcheck="false"
+                               aria-describedby="calc-syntax-help">
+                        <div class="calculator-input-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" id="calc-backspace-btn" title="Borrar último">⌫</button>
+                            <button type="button" class="btn btn-ghost btn-sm" id="calc-clear-btn" title="Limpiar">✕</button>
+                        </div>
+                    </div>
+                    <div class="calculator-shortcuts">
+                        <button type="button" class="shortcut-btn" data-token="AND">AND</button>
+                        <button type="button" class="shortcut-btn" data-token="OR">OR</button>
+                        <button type="button" class="shortcut-btn" data-token="NOT">NOT</button>
+                        <button type="button" class="shortcut-btn" data-token="XOR">XOR</button>
+                        <button type="button" class="shortcut-btn" data-token="NAND">NAND</button>
+                        <button type="button" class="shortcut-btn" data-token="NOR">NOR</button>
+                        <button type="button" class="shortcut-btn" data-token="XNOR">XNOR</button>
+                        <button type="button" class="shortcut-btn" data-token="(">(</button>
+                        <button type="button" class="shortcut-btn" data-token=")">)</button>
+                        <button type="button" class="shortcut-btn" data-token="A">A</button>
+                        <button type="button" class="shortcut-btn" data-token="B">B</button>
+                        <button type="button" class="shortcut-btn" data-token="C">C</button>
+                        <button type="button" class="shortcut-btn" data-token="D">D</button>
+                    </div>
+                </div>
+
+                <div class="text-center calculator-actions">
+                    <button type="button" class="btn btn-primary btn-lg" id="calc-btn">
+                        📊 Generar Tabla de Verdad
+                    </button>
+                </div>
+
+                <div class="calculator-result" id="calc-result">
+                    <p class="text-muted text-center">
+                        Ingresa una expresión y presiona "Generar" para ver la tabla de verdad.
+                    </p>
+                </div>
+
+                <div class="calculator-syntax" id="calc-syntax-help">
+                    <h4 class="info-section-title">📖 Sintaxis Soportada</h4>
+                    <ul>
+                        <li><strong>Variables:</strong> letras mayúsculas (A, B, C, D…)</li>
+                        <li><strong>AND:</strong> A AND B · A · B · A ∧ B · A & B</li>
+                        <li><strong>OR:</strong> A OR B · A + B · A ∨ B · A | B</li>
+                        <li><strong>NOT:</strong> NOT A · ¬A · !A · ~A</li>
+                        <li><strong>XOR:</strong> A XOR B · A ⊕ B · A ^ B</li>
+                        <li><strong>NAND / NOR / XNOR:</strong> operadores directos o con NOT</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             HISTORY SCREEN
+             ═══════════════════════════════════════════ -->
+        <div id="history-screen" class="screen">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">🔬</span>
+                    <span class="navbar-title">LogicPuzzle Lab</span>
+                </div>
+                <ul class="navbar-nav">
+                    <li><button class="nav-btn" data-screen="main-menu">← Menú</button></li>
+                    <li><button class="nav-btn" data-screen="puzzle-screen">🧩 Puzzles</button></li>
+                    <li><button class="nav-btn active" data-screen="history-screen">📊 Historial</button></li>
+                </ul>
+                <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
+                    <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
+                </div>
+            </nav>
+
+            <div class="history-container">
+                <h2 class="text-center mb-2">📊 Tu Progreso</h2>
+                <div id="history-content">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             MODAL OVERLAY
+             ═══════════════════════════════════════════ -->
+        <div class="modal-overlay" id="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3></h3>
+                    <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('active')">✕</button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             SUCCESS OVERLAY
+             ═══════════════════════════════════════════ -->
+        <div class="success-overlay" id="success-overlay">
+            <div class="success-icon">🎉</div>
+            <h2 class="success-title">¡Puzzle Completado!</h2>
+            <div class="success-stars"></div>
+            <p class="success-message"></p>
+            <div class="success-buttons"></div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay" aria-hidden="true">
+            <nav class="mobile-nav-panel" role="navigation" aria-label="Menú principal">
+                <div class="mobile-nav-header">
+                    <span class="mobile-nav-title">🔬 LogicPuzzle Lab</span>
+                    <button type="button" class="btn btn-icon btn-ghost" id="mobile-nav-close" aria-label="Cerrar menú">✕</button>
+                </div>
+                <ul class="mobile-nav-links">
+                    <li><button type="button" class="mobile-nav-link" data-screen="main-menu">🏠 Menú Principal</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="learning-screen">📚 Aprender</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="puzzle-screen">🧩 Puzzles</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="free-screen">🔧 Modo Libre</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="exam-screen">📝 Examen</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="calculator-screen">🔢 Calculadora</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="history-screen">📊 Historial</button></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             TOAST CONTAINER
+             ═══════════════════════════════════════════ -->
+        <div class="toast-container" id="toast-container"></div>
+
+    </div>
+
+    <!-- Main Application Script (ES Module) -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" crossorigin="anonymous"></script>
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
