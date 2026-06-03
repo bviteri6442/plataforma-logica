@@ -263,7 +263,7 @@
     {
       "id": "slot_double_not",
       "name": "Doble inversión",
-      "prompt": "Coloca dos NOT en cadena. ¿Qué función cumple A → NOT → NOT → F?",
+      "prompt": "Coloca dos NOT en cadena sobre A. ¿Qué función cumple A → NOT → NOT → F?",
       "expression": "F = A (doble NOT)",
       "difficulty": 2,
       "expected_truth_table": [
@@ -273,11 +273,14 @@
       "layout": {
         "inputs": [{"ref": "A", "x": 80, "y": 240}],
         "outputs": [{"ref": "F", "x": 920, "y": 240}],
-        "fixed_gates": [{"ref": "g_not1", "type": "NOT", "x": 280, "y": 220}],
-        "slots": [{"ref": "slot_not2", "x": 520, "y": 220, "accepts": ["NOT"], "label": "?"}],
+        "fixed_gates": [],
+        "slots": [
+          {"ref": "slot_not1", "x": 320, "y": 220, "accepts": ["NOT"], "label": "?"},
+          {"ref": "slot_not2", "x": 560, "y": 220, "accepts": ["NOT"], "label": "?"}
+        ],
         "connections": [
-          {"from": "A:0", "to": "g_not1:0"},
-          {"from": "g_not1:0", "to": "slot_not2:0"},
+          {"from": "A:0", "to": "slot_not1:0"},
+          {"from": "slot_not1:0", "to": "slot_not2:0"},
           {"from": "slot_not2:0", "to": "F:0"}
         ]
       },
@@ -552,6 +555,157 @@
         ]
       },
       "palette": ["XOR", "AND", "OR", "NOT"]
+    },
+    {
+      "id": "slot_kahoot_xor_and_not",
+      "name": "Circuito triple: XOR, NOT y AND",
+      "prompt": "Coloca 3 compuertas: XOR entre A y B, NOT en la línea de C, y AND que une ambas rutas hacia F.",
+      "expression": "F = (A ⊕ B) · (¬C)",
+      "difficulty": 4,
+      "kahoot": true,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 0},
+        {"A": 0, "B": 0, "C": 1, "F": 0},
+        {"A": 0, "B": 1, "C": 0, "F": 1},
+        {"A": 0, "B": 1, "C": 1, "F": 0},
+        {"A": 1, "B": 0, "C": 0, "F": 1},
+        {"A": 1, "B": 0, "C": 1, "F": 0},
+        {"A": 1, "B": 1, "C": 0, "F": 0},
+        {"A": 1, "B": 1, "C": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 120},
+          {"ref": "B", "x": 60, "y": 240},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [],
+        "slots": [
+          {"ref": "slot_xor", "x": 280, "y": 160, "accepts": ["XOR"], "label": "?"},
+          {"ref": "slot_not", "x": 280, "y": 360, "accepts": ["NOT"], "label": "?"},
+          {"ref": "slot_and", "x": 580, "y": 260, "accepts": ["AND"], "label": "?"}
+        ],
+        "connections": [
+          {"from": "A:0", "to": "slot_xor:0"},
+          {"from": "B:0", "to": "slot_xor:1"},
+          {"from": "C:0", "to": "slot_not:0"},
+          {"from": "slot_xor:0", "to": "slot_and:0"},
+          {"from": "slot_not:0", "to": "slot_and:1"},
+          {"from": "slot_and:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["XOR", "NOT", "AND", "OR", "NAND", "NOR"]
+    },
+    {
+      "id": "slot_kahoot_or_not_chain",
+      "name": "OR en cascada + NOT",
+      "prompt": "Ya tienes un OR entre A y B. Completa el segundo OR con C y el NOT final hacia F (estilo NOR parcial).",
+      "expression": "F = ¬((A + B) + C)",
+      "difficulty": 3,
+      "kahoot": true,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 1},
+        {"A": 0, "B": 0, "C": 1, "F": 0},
+        {"A": 0, "B": 1, "C": 0, "F": 0},
+        {"A": 1, "B": 0, "C": 0, "F": 0},
+        {"A": 1, "B": 1, "C": 0, "F": 0},
+        {"A": 1, "B": 0, "C": 1, "F": 0},
+        {"A": 0, "B": 1, "C": 1, "F": 0},
+        {"A": 1, "B": 1, "C": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 140},
+          {"ref": "B", "x": 60, "y": 260},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [{"ref": "g_or1", "type": "OR", "x": 280, "y": 200}],
+        "slots": [
+          {"ref": "slot_or2", "x": 520, "y": 260, "accepts": ["OR"], "label": "?"},
+          {"ref": "slot_not", "x": 720, "y": 260, "accepts": ["NOT"], "label": "?"}
+        ],
+        "connections": [
+          {"from": "A:0", "to": "g_or1:0"},
+          {"from": "B:0", "to": "g_or1:1"},
+          {"from": "g_or1:0", "to": "slot_or2:0"},
+          {"from": "C:0", "to": "slot_or2:1"},
+          {"from": "slot_or2:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["OR", "NOT", "AND", "NOR"]
+    },
+    {
+      "id": "slot_kahoot_nand_build",
+      "name": "Construye un NAND",
+      "prompt": "Sin NAND directo: coloca AND entre A y B, luego NOT para obtener F = ¬(A·B).",
+      "expression": "F = ¬(A · B)",
+      "difficulty": 3,
+      "kahoot": true,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "F": 1},
+        {"A": 0, "B": 1, "F": 1},
+        {"A": 1, "B": 0, "F": 1},
+        {"A": 1, "B": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [{"ref": "A", "x": 80, "y": 180}, {"ref": "B", "x": 80, "y": 300}],
+        "outputs": [{"ref": "F", "x": 920, "y": 240}],
+        "fixed_gates": [],
+        "slots": [
+          {"ref": "slot_and", "x": 360, "y": 220, "accepts": ["AND"], "label": "?"},
+          {"ref": "slot_not", "x": 600, "y": 220, "accepts": ["NOT"], "label": "?"}
+        ],
+        "connections": [
+          {"from": "A:0", "to": "slot_and:0"},
+          {"from": "B:0", "to": "slot_and:1"},
+          {"from": "slot_and:0", "to": "slot_not:0"},
+          {"from": "slot_not:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["AND", "NOT", "NAND", "OR"]
+    },
+    {
+      "id": "slot_kahoot_abc_and_or",
+      "name": "AND, NOT y OR",
+      "prompt": "Coloca AND (A con B) y NOT (sobre C). El OR fijo une ambas rutas hacia F: F = (A·B) + (¬C).",
+      "expression": "F = (A · B) + (¬C)",
+      "difficulty": 4,
+      "kahoot": true,
+      "expected_truth_table": [
+        {"A": 0, "B": 0, "C": 0, "F": 1},
+        {"A": 0, "B": 0, "C": 1, "F": 0},
+        {"A": 0, "B": 1, "C": 0, "F": 1},
+        {"A": 0, "B": 1, "C": 1, "F": 0},
+        {"A": 1, "B": 0, "C": 0, "F": 1},
+        {"A": 1, "B": 0, "C": 1, "F": 0},
+        {"A": 1, "B": 1, "C": 0, "F": 1},
+        {"A": 1, "B": 1, "C": 1, "F": 0}
+      ],
+      "layout": {
+        "inputs": [
+          {"ref": "A", "x": 60, "y": 120},
+          {"ref": "B", "x": 60, "y": 240},
+          {"ref": "C", "x": 60, "y": 380}
+        ],
+        "outputs": [{"ref": "F", "x": 920, "y": 260}],
+        "fixed_gates": [{"ref": "g_or", "type": "OR", "x": 700, "y": 260}],
+        "slots": [
+          {"ref": "slot_and", "x": 300, "y": 160, "accepts": ["AND"], "label": "?"},
+          {"ref": "slot_not", "x": 300, "y": 360, "accepts": ["NOT"], "label": "?"}
+        ],
+        "connections": [
+          {"from": "A:0", "to": "slot_and:0"},
+          {"from": "B:0", "to": "slot_and:1"},
+          {"from": "C:0", "to": "slot_not:0"},
+          {"from": "slot_and:0", "to": "g_or:0"},
+          {"from": "slot_not:0", "to": "g_or:1"},
+          {"from": "g_or:0", "to": "F:0"}
+        ]
+      },
+      "palette": ["AND", "NOT", "OR", "XOR"]
     }
   ]
 }

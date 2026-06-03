@@ -26,6 +26,26 @@ class Token:
         return f"Token({self.type}, {self.value})"
 
 
+def preprocess_expression(expression: str) -> str:
+    """
+    Normaliza notación de clase: + → OR, x → AND, A(B) → A AND (B), []{} → ().
+    """
+    import re
+
+    expr = expression.strip().upper()
+    expr = expr.replace('[', '(').replace(']', ')')
+    expr = expr.replace('{', '(').replace('}', ')')
+    expr = re.sub(r'\s*\.\s*', ' AND ', expr)
+    expr = re.sub(r'\+', ' OR ', expr)
+    expr = re.sub(r'([A-Z)\]])\s*[xX]\s*(?=[(A-Z])', r'\1 AND ', expr)
+    expr = re.sub(r'(?<![A-Z])([A-Z])\s*(?=\()', r'\1 AND ', expr)
+    expr = re.sub(r'(\))\s*(?=\()', r'\1 AND ', expr)
+    expr = re.sub(r'(\))\s*([A-Z])(?=\s|\)|$)', r'\1 AND \2', expr)
+    expr = re.sub(r'\s*([()])\s*', r' \1 ', expr)
+    expr = re.sub(r'\s+', ' ', expr).strip()
+    return expr
+
+
 def tokenize(expression: str) -> list[Token]:
     """
     Convierte una expresión booleana en una lista de tokens.
@@ -309,7 +329,8 @@ def generate_truth_table(expression: str) -> dict[str, Any]:
             - expression: la expresión original
             - rows: lista de filas, cada una con valores de variables y resultado
     """
-    tokens = tokenize(expression)
+    normalized = preprocess_expression(expression)
+    tokens = tokenize(normalized)
     parser = Parser(tokens)
     ast = parser.parse()
     variables = sorted(extract_variables(ast))
@@ -323,7 +344,7 @@ def generate_truth_table(expression: str) -> dict[str, Any]:
 
     return {
         'variables': variables,
-        'expression': expression,
+        'expression': normalized,
         'rows': rows,
         'ast': ast
     }

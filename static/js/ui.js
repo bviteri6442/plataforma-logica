@@ -138,7 +138,8 @@ export class UIController {
             if (t.dataset.toastKey === key) t.remove();
         });
 
-        while (this.toastContainer.children.length >= 2) {
+        const maxToasts = window.matchMedia('(max-width: 768px)').matches ? 1 : 2;
+        while (this.toastContainer.children.length >= maxToasts) {
             this.toastContainer.firstElementChild?.remove();
         }
 

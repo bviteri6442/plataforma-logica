@@ -20,18 +20,42 @@ def _puzzles_path() -> str:
     )
 
 
+def _layout_metrics(puzzle: dict[str, Any]) -> tuple[int, int, int]:
+    layout = puzzle.get('layout', {})
+    slots = layout.get('slots') or []
+    connections = layout.get('connections') or []
+    fixed = layout.get('fixed_gates') or []
+    return len(slots), len(connections), len(fixed)
+
+
+def is_kahoot_slot_puzzle(puzzle: dict[str, Any]) -> bool:
+    """
+    Kahoot/examen: circuito poblado, 2–3 piezas por colocar, 5–7 conexiones.
+    """
+    n_slots, n_conn, n_fixed = _layout_metrics(puzzle)
+    if n_slots < 2 or n_slots > 3:
+        return False
+    if n_conn < 4 or n_conn > 9:
+        return False
+    return True
+
+
 def load_slot_puzzles() -> list[dict[str, Any]]:
     global _PUZZLES
     if _PUZZLES is not None:
         return _PUZZLES
     with open(_puzzles_path(), 'r', encoding='utf-8') as f:
         data = json.load(f)
-    # Solo puzzles con al menos un slot vacío
     _PUZZLES = [
         p for p in data.get('puzzles', [])
         if p.get('layout', {}).get('slots')
     ]
     return _PUZZLES
+
+
+def load_kahoot_slot_puzzles() -> list[dict[str, Any]]:
+    """Subconjunto para multijugador: más compuertas fijas y 2–3 huecos."""
+    return [p for p in load_slot_puzzles() if is_kahoot_slot_puzzle(p)]
 
 
 def get_slot_puzzle(puzzle_id: str) -> dict[str, Any] | None:
@@ -42,11 +66,19 @@ def get_slot_puzzle(puzzle_id: str) -> dict[str, Any] | None:
 
 
 def get_random_slot_puzzles(count: int) -> list[str]:
-    pool = load_slot_puzzles()
+    pool = load_kahoot_slot_puzzles()
+    if not pool:
+        pool = [
+            p for p in load_slot_puzzles()
+            if len(_layout_metrics(p)[0]) >= 1
+            and _layout_metrics(p)[1] >= 5
+        ]
+    if not pool:
+        pool = load_slot_puzzles()
+
     if len(pool) <= count:
         shuffled = [p['id'] for p in pool]
         random.shuffle(shuffled)
-        # Repeat if needed for infinite pool effect
         while len(shuffled) < count:
             extra = [p['id'] for p in pool]
             random.shuffle(extra)

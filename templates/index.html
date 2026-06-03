@@ -263,7 +263,7 @@
                     <label for="calc-input">Expresión Booleana</label>
                     <div class="calculator-input-row">
                         <input type="text" id="calc-input" class="calculator-input"
-                               placeholder="Variables a-z y botones de compuertas. Ej: (A AND B)"
+                               placeholder="Ej: A x (A + B) o A AND (B OR C)"
                                autocomplete="off" spellcheck="false"
                                inputmode="text"
                                aria-describedby="calc-syntax-help">
@@ -280,6 +280,8 @@
                         <button type="button" class="shortcut-btn" data-token="NAND">NAND</button>
                         <button type="button" class="shortcut-btn" data-token="NOR">NOR</button>
                         <button type="button" class="shortcut-btn" data-token="XNOR">XNOR</button>
+                        <button type="button" class="shortcut-btn" data-token="+">+</button>
+                        <button type="button" class="shortcut-btn" data-token="x">x</button>
                         <button type="button" class="shortcut-btn" data-token="(">(</button>
                         <button type="button" class="shortcut-btn" data-token=")">)</button>
                         <button type="button" class="shortcut-btn" data-token="[">[</button>
@@ -309,10 +311,11 @@
                 <div class="calculator-syntax" id="calc-syntax-help">
                     <h4 class="info-section-title">📖 Sintaxis Soportada</h4>
                     <ul>
-                        <li><strong>Teclado:</strong> solo letras <strong>a-z</strong> (variables de una letra) y separadores <strong>( ) [ ] { } .</strong></li>
-                        <li><strong>Compuertas:</strong> use los botones AND, OR, NOT, XOR, NAND, NOR, XNOR</li>
-                        <li><strong>Punto (.)</strong> equivale a AND: <code>A.B</code> = <code>A AND B</code></li>
-                        <li><strong>[ ] { }</strong> se interpretan como paréntesis al generar la tabla</li>
+                        <li><strong>Variables:</strong> letras <strong>A-Z</strong> (siempre mayúsculas)</li>
+                        <li><strong>Compuertas:</strong> botones AND, OR, NOT, XOR, NAND, NOR, XNOR</li>
+                        <li><strong>Notación de clase:</strong> <code>+</code> = OR, <code>x</code> o <code>.</code> = AND</li>
+                        <li><strong>Producto:</strong> <code>A(B)</code> o <code>A(B+C)</code> = <code>A AND (…)</code> (como en el libro)</li>
+                        <li><strong>Ejemplo:</strong> <code>A x (A + B) + B x A</code></li>
                     </ul>
                 </div>
             </div>

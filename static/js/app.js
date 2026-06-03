@@ -20,6 +20,7 @@ import {
     validateCalcExpression,
     isAllowedCalcKey,
     formatCalcToken,
+    friendlyCalcError,
 } from './calc-input.js';
 import { sounds } from './sounds.js';
 import { UIController } from './ui.js';
@@ -648,9 +649,10 @@ class LogicPuzzleApp {
             input.addEventListener('input', () => {
                 const cleaned = sanitizeCalcInput(input.value);
                 if (cleaned !== input.value) {
-                    const pos = input.selectionStart;
+                    const pos = input.selectionStart ?? cleaned.length;
                     input.value = cleaned;
-                    input.setSelectionRange(pos - 1, pos - 1);
+                    const newPos = Math.max(0, Math.min(pos, cleaned.length));
+                    input.setSelectionRange(newPos, newPos);
                 }
             });
 
@@ -724,6 +726,8 @@ class LogicPuzzleApp {
         if (!input || !resultContainer) return;
 
         const raw = sanitizeCalcInput(input.value).trim();
+        input.value = raw;
+
         const validation = validateCalcExpression(raw);
         if (!validation.ok) {
             this.ui.showToast(validation.message, 'warning');
@@ -731,7 +735,6 @@ class LogicPuzzleApp {
         }
 
         const expression = normalizeCalcExpression(raw);
-        input.value = raw;
 
         try {
             const response = await fetch('/api/truth-table', {
@@ -743,8 +746,8 @@ class LogicPuzzleApp {
             const data = await response.json();
 
             if (!response.ok || data.error) {
-                const msg = data.error || 'Error al procesar la expresión';
-                this.ui.showToast(msg, 'error');
+                const msg = friendlyCalcError(data.error || 'Error al procesar la expresión');
+                this.ui.showToast(msg, 'error', 5000);
                 resultContainer.innerHTML = `<p class="calc-error">${msg}</p>`;
                 sounds.error();
                 return;
