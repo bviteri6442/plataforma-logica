@@ -24,6 +24,9 @@ export class CircuitRenderer {
 
         // Viewport
         this.viewBox = { x: 0, y: 0, w: 1200, h: 700 };
+        this.touchFriendly = false;
+        this._pinRadius = 5;
+        this._uiScale = 1;
 
         // Callbacks
         this.onGateSelected = null;
@@ -45,6 +48,40 @@ export class CircuitRenderer {
         this.uiLayer = this._createGroup('ui-layer');
 
         this._drawGrid();
+        this.applyDeviceViewport();
+    }
+
+    /**
+     * Adjust viewBox and touch sizes for mobile / coarse pointers.
+     */
+    applyDeviceViewport() {
+        const mobile = window.matchMedia('(max-width: 768px)').matches;
+        const coarse = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        this.touchFriendly = mobile || coarse;
+        this._pinRadius = this.touchFriendly ? 10 : 5;
+        this._uiScale = this.touchFriendly ? 1.35 : 1;
+
+        if (this.touchFriendly) {
+            this.viewBox = { x: 0, y: 0, w: 1020, h: 600 };
+            this.svg.classList.add('touch-friendly');
+        } else {
+            this.viewBox = { x: 0, y: 0, w: 1200, h: 700 };
+            this.svg.classList.remove('touch-friendly');
+        }
+
+        this.svg.setAttribute(
+            'viewBox',
+            `${this.viewBox.x} ${this.viewBox.y} ${this.viewBox.w} ${this.viewBox.h}`
+        );
+    }
+
+    /** X position for output nodes (right side of workspace). */
+    getOutputX() {
+        return this.viewBox.w - 100;
+    }
+
+    _scaled(n) {
+        return n * this._uiScale;
     }
 
     _createGroup(id) {
@@ -296,7 +333,7 @@ export class CircuitRenderer {
             const circle = document.createElementNS(SVG_NS, 'circle');
             circle.setAttribute('cx', pin.x - 12);
             circle.setAttribute('cy', pin.y);
-            circle.setAttribute('r', 5);
+            circle.setAttribute('r', this._pinRadius);
             circle.setAttribute('class', 'gate-pin');
             circle.setAttribute('data-pin-type', 'input');
             circle.setAttribute('data-pin-index', i);
@@ -319,7 +356,7 @@ export class CircuitRenderer {
             const circle = document.createElementNS(SVG_NS, 'circle');
             circle.setAttribute('cx', pin.x + 12);
             circle.setAttribute('cy', pin.y);
-            circle.setAttribute('r', 5);
+            circle.setAttribute('r', this._pinRadius);
             circle.setAttribute('class', 'gate-pin');
             circle.setAttribute('data-pin-type', 'output');
             circle.setAttribute('data-pin-index', i);
@@ -341,33 +378,38 @@ export class CircuitRenderer {
         const rect = document.createElementNS(SVG_NS, 'rect');
         rect.setAttribute('x', 0);
         rect.setAttribute('y', 0);
-        rect.setAttribute('width', 60);
-        rect.setAttribute('height', 40);
+        const boxW = this._scaled(60);
+        const boxH = this._scaled(40);
+        rect.setAttribute('width', boxW);
+        rect.setAttribute('height', boxH);
         rect.setAttribute('class', 'input-toggle-bg');
         g.appendChild(rect);
 
         // Name label
         const label = document.createElementNS(SVG_NS, 'text');
-        label.setAttribute('x', 20);
-        label.setAttribute('y', 14);
+        label.setAttribute('x', boxW * 0.33);
+        label.setAttribute('y', boxH * 0.35);
         label.setAttribute('class', 'input-toggle-label');
         label.textContent = input.name;
         g.appendChild(label);
 
         // Value display
         const val = document.createElementNS(SVG_NS, 'text');
-        val.setAttribute('x', 20);
-        val.setAttribute('y', 30);
+        val.setAttribute('x', boxW * 0.33);
+        val.setAttribute('y', boxH * 0.75);
         val.setAttribute('class', 'input-toggle-value low');
         val.setAttribute('data-value-display', 'true');
         val.textContent = '0';
         g.appendChild(val);
 
+        const pinY = boxH / 2;
+        const pinOutX = boxW + 5;
+
         // Output pin
         const pin = document.createElementNS(SVG_NS, 'circle');
-        pin.setAttribute('cx', 65);
-        pin.setAttribute('cy', 20);
-        pin.setAttribute('r', 5);
+        pin.setAttribute('cx', pinOutX);
+        pin.setAttribute('cy', pinY);
+        pin.setAttribute('r', this._pinRadius);
         pin.setAttribute('class', 'gate-pin');
         pin.setAttribute('data-pin-type', 'output');
         pin.setAttribute('data-pin-index', '0');
@@ -376,13 +418,15 @@ export class CircuitRenderer {
 
         // Pin line
         const line = document.createElementNS(SVG_NS, 'line');
-        line.setAttribute('x1', 60);
-        line.setAttribute('y1', 20);
-        line.setAttribute('x2', 65);
-        line.setAttribute('y2', 20);
+        line.setAttribute('x1', boxW);
+        line.setAttribute('y1', pinY);
+        line.setAttribute('x2', pinOutX);
+        line.setAttribute('y2', pinY);
         line.setAttribute('stroke', '#334');
-        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-width', this.touchFriendly ? 3 : 2);
         g.appendChild(line);
+
+        input.definition.outputPins[0] = { x: pinOutX, y: pinY };
 
         input.svgGroup = g;
         this.gateLayer.appendChild(g);
@@ -396,46 +440,52 @@ export class CircuitRenderer {
 
         // Input pin
         const pin = document.createElementNS(SVG_NS, 'circle');
-        pin.setAttribute('cx', -5);
-        pin.setAttribute('cy', 20);
-        pin.setAttribute('r', 5);
+        const ledCx = this._scaled(25);
+        const ledCy = this._scaled(20);
+        const pinInX = -this._scaled(5);
+
+        pin.setAttribute('cx', pinInX);
+        pin.setAttribute('cy', ledCy);
+        pin.setAttribute('r', this._pinRadius);
         pin.setAttribute('class', 'gate-pin');
         pin.setAttribute('data-pin-type', 'input');
         pin.setAttribute('data-pin-index', '0');
         pin.setAttribute('data-gate-id', output.id);
         g.appendChild(pin);
 
+        output.definition.inputPins[0] = { x: pinInX, y: ledCy };
+
         // Pin line
         const line = document.createElementNS(SVG_NS, 'line');
-        line.setAttribute('x1', -5);
-        line.setAttribute('y1', 20);
-        line.setAttribute('x2', 5);
-        line.setAttribute('y2', 20);
+        line.setAttribute('x1', pinInX);
+        line.setAttribute('y1', ledCy);
+        line.setAttribute('x2', this._scaled(5));
+        line.setAttribute('y2', ledCy);
         line.setAttribute('stroke', '#334');
-        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-width', this.touchFriendly ? 3 : 2);
         g.appendChild(line);
 
         // LED glow
         const glow = document.createElementNS(SVG_NS, 'circle');
-        glow.setAttribute('cx', 25);
-        glow.setAttribute('cy', 20);
-        glow.setAttribute('r', 22);
+        glow.setAttribute('cx', ledCx);
+        glow.setAttribute('cy', ledCy);
+        glow.setAttribute('r', this._scaled(22));
         glow.setAttribute('class', 'led-glow');
         glow.setAttribute('fill', 'rgba(0, 255, 136, 0.3)');
         g.appendChild(glow);
 
         // LED body
         const led = document.createElementNS(SVG_NS, 'circle');
-        led.setAttribute('cx', 25);
-        led.setAttribute('cy', 20);
-        led.setAttribute('r', 14);
+        led.setAttribute('cx', ledCx);
+        led.setAttribute('cy', ledCy);
+        led.setAttribute('r', this._scaled(14));
         led.setAttribute('class', 'led-body off');
         g.appendChild(led);
 
         // LED label
         const label = document.createElementNS(SVG_NS, 'text');
-        label.setAttribute('x', 25);
-        label.setAttribute('y', 22);
+        label.setAttribute('x', ledCx);
+        label.setAttribute('y', ledCy + 2);
         label.setAttribute('class', 'gate-label');
         label.setAttribute('fill', '#fff');
         label.textContent = output.name;

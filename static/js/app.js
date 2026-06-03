@@ -259,6 +259,7 @@ class LogicPuzzleApp {
 
         // Create circuit renderer
         this.circuit = new CircuitRenderer(svgEl);
+        this.circuit.applyDeviceViewport();
 
         // Setup drag & drop
         const palette = document.getElementById('gate-palette');
@@ -267,10 +268,13 @@ class LogicPuzzleApp {
         // Setup simulator
         this.simulator = new Simulator(this.circuit);
 
+        this._setFreeVarControlsVisible(false);
+
         // Add input nodes
         const inputs = puzzle.inputs || [];
-        const inputSpacing = 80;
-        const inputStartY = Math.max(100, (500 - inputs.length * inputSpacing) / 2);
+        const inputSpacing = this.circuit.touchFriendly ? 100 : 80;
+        const inputStartY = Math.max(80, (this.circuit.viewBox.h - inputs.length * inputSpacing) / 2);
+        const outX = this.circuit.getOutputX();
 
         inputs.forEach((name, i) => {
             this.circuit.addInput(name, 60, inputStartY + i * inputSpacing);
@@ -279,7 +283,7 @@ class LogicPuzzleApp {
         // Add output node
         const outputs = puzzle.outputs || ['F'];
         outputs.forEach((name, i) => {
-            this.circuit.addOutput(name, 1000, inputStartY + i * inputSpacing + 40);
+            this.circuit.addOutput(name, outX, inputStartY + i * inputSpacing + 40);
         });
 
         // Populate gate palette
@@ -352,11 +356,15 @@ class LogicPuzzleApp {
     }
 
     _bindPuzzleControls(puzzle) {
-        // Verify button
         const verifyBtn = document.getElementById('verify-btn');
         if (verifyBtn) {
+            verifyBtn.textContent = '✓ Verificar';
+            verifyBtn.style.display = '';
             verifyBtn.onclick = () => this._verifyCircuit(puzzle);
         }
+
+        const hintBtn = document.getElementById('hint-btn');
+        if (hintBtn) hintBtn.style.display = '';
 
         // Reset button
         const resetBtn = document.getElementById('reset-btn');
@@ -364,8 +372,6 @@ class LogicPuzzleApp {
             resetBtn.onclick = () => this._resetWorkspace(puzzle);
         }
 
-        // Hint button
-        const hintBtn = document.getElementById('hint-btn');
         if (hintBtn) {
             hintBtn.onclick = () => this._showHint();
         }
@@ -503,18 +509,21 @@ class LogicPuzzleApp {
 
         svgEl.innerHTML = '';
         this.circuit = new CircuitRenderer(svgEl);
+        this.circuit.applyDeviceViewport();
 
         const palette = document.getElementById('gate-palette');
         this.dragDrop = new DragDropManager(this.circuit, palette, svgEl);
         this.simulator = new Simulator(this.circuit);
 
+        this._setFreeVarControlsVisible(true);
+        this._bindFreeVarControls();
+
         // All gates available
         this._populatePalette(null);
 
-        // Add some default inputs
-        this.circuit.addInput('A', 60, 160);
-        this.circuit.addInput('B', 60, 280);
-        this.circuit.addOutput('F', 1000, 220);
+        this.circuit.addInput('A', 60, 100);
+        this.circuit.addInput('B', 60, 210);
+        this.circuit.addOutput('F', this.circuit.getOutputX(), 160);
 
         // Wire up callbacks
         this.dragDrop.onGateDropped = () => this._onCircuitChanged();
@@ -529,7 +538,9 @@ class LogicPuzzleApp {
         if (exprEl) exprEl.textContent = 'Construye cualquier circuito';
 
         const theoryEl = document.getElementById('info-theory');
-        if (theoryEl) theoryEl.innerHTML = '<p>Arrastra compuertas, conecta cables y experimenta libremente.</p>';
+        if (theoryEl) {
+            theoryEl.innerHTML = '<p>Arrastra compuertas, conecta cables y experimenta libremente. Usa <strong>+ Variable</strong> para agregar C, D, E…</p>';
+        }
 
         const tableEl = document.getElementById('info-truth-table');
         if (tableEl) tableEl.innerHTML = '<p class="text-muted">La tabla de verdad se actualizará al construir el circuito.</p>';
@@ -559,6 +570,74 @@ class LogicPuzzleApp {
         // Hide timer in free mode
         const timerEl = document.getElementById('puzzle-timer');
         if (timerEl) timerEl.textContent = '∞';
+    }
+
+    _setFreeVarControlsVisible(visible) {
+        const el = document.getElementById('free-var-controls');
+        if (el) el.hidden = !visible;
+    }
+
+    _bindFreeVarControls() {
+        const addBtn = document.getElementById('add-var-btn');
+        const removeBtn = document.getElementById('remove-var-btn');
+        if (addBtn) addBtn.onclick = () => this._addFreeVariable();
+        if (removeBtn) removeBtn.onclick = () => this._removeFreeVariable();
+    }
+
+    _addFreeVariable() {
+        if (!this.circuit || this.activeMode !== 'free') return;
+
+        const inputs = this.circuit.getInputNodes().sort((a, b) => a.name.localeCompare(b.name));
+        const lastName = inputs[inputs.length - 1]?.name || 'A';
+        if (lastName >= 'Z') {
+            this.ui.showToast('Máximo 26 variables (A–Z)', 'warning');
+            return;
+        }
+
+        const next = String.fromCharCode(lastName.charCodeAt(0) + 1);
+        this.circuit.addInput(next, 60, 100);
+        this._relayoutFreeInputs();
+        this._repositionFreeOutput();
+        this._onCircuitChanged();
+        this.ui.showToast(`Variable ${next} agregada`, 'success');
+    }
+
+    _removeFreeVariable() {
+        if (!this.circuit || this.activeMode !== 'free') return;
+
+        const inputs = this.circuit.getInputNodes().sort((a, b) => a.name.localeCompare(b.name));
+        if (inputs.length <= 2) {
+            this.ui.showToast('Debes mantener al menos A y B', 'warning');
+            return;
+        }
+
+        const last = inputs[inputs.length - 1];
+        this.circuit.removeGate(last.id);
+        this._relayoutFreeInputs();
+        this._repositionFreeOutput();
+        this._onCircuitChanged();
+        this.ui.showToast(`Variable ${last.name} quitada`, 'info');
+    }
+
+    _relayoutFreeInputs() {
+        if (!this.circuit) return;
+        const inputs = this.circuit.getInputNodes().sort((a, b) => a.name.localeCompare(b.name));
+        const spacing = this.circuit.touchFriendly ? 110 : 90;
+        const startY = 80;
+        inputs.forEach((inp, i) => {
+            this.circuit.moveGate(inp.id, 60, startY + i * spacing);
+        });
+    }
+
+    _repositionFreeOutput() {
+        if (!this.circuit) return;
+        const inputs = this.circuit.getInputNodes();
+        const outputs = Array.from(this.circuit.gates.values()).filter((g) => g.type === 'OUTPUT');
+        if (!outputs.length) return;
+
+        const spacing = this.circuit.touchFriendly ? 110 : 90;
+        const midY = 80 + Math.max(0, (inputs.length - 1) * spacing) / 2;
+        this.circuit.moveGate(outputs[0].id, this.circuit.getOutputX(), midY);
     }
 
     _generateFreeTable() {
@@ -867,7 +946,18 @@ class LogicPuzzleApp {
 // ─── Initialize on DOM ready ───
 Object.assign(LogicPuzzleApp.prototype, KahootExamMixin);
 
+let _viewportResizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(_viewportResizeTimer);
+    _viewportResizeTimer = setTimeout(() => {
+        if (window.app?.circuit?.applyDeviceViewport) {
+            window.app.circuit.applyDeviceViewport();
+        }
+    }, 200);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const app = new LogicPuzzleApp();
+    window.app = app;
     app.init();
 });

@@ -204,6 +204,7 @@ export const KahootExamMixin = {
         this.currentPuzzleData = data.puzzle;
         this.ui.navigateTo('workspace-screen');
         this._setupSlotWorkspace(data.puzzle, data);
+        this._setFreeVarControlsVisible(false);
 
         const qNum = (data.question_index ?? 0) + 1;
         const total = data.total_questions || 15;
@@ -239,6 +240,7 @@ export const KahootExamMixin = {
 
         svgEl.innerHTML = '';
         this.circuit = new CircuitRenderer(svgEl);
+        this.circuit.applyDeviceViewport();
         this.slotLoader = new SlotCircuitLoader(this.circuit);
         this.slotLoader.loadPuzzle(puzzle);
         this.simulator = new Simulator(this.circuit);

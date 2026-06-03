@@ -149,22 +149,20 @@
              WORKSPACE SCREEN (Puzzle/Free/Exam)
              ═══════════════════════════════════════════ -->
         <div id="workspace-screen" class="screen">
-            <nav class="navbar">
-                <div class="navbar-brand" style="cursor:default">
-                    <button class="btn btn-ghost btn-sm" id="back-btn">← Volver</button>
-                </div>
-                <div class="puzzle-info-bar" style="flex:1; border:none; background:none; padding: 0 1rem;">
-                    <h3 id="puzzle-name" style="margin-right:1rem;"></h3>
-                    <span class="puzzle-expression" id="puzzle-expression"></span>
-                </div>
-                <div class="navbar-controls">
-                    <div class="timer">
-                        <span>⏱</span>
+            <header class="workspace-header">
+                <div class="workspace-header-row workspace-header-row--main">
+                    <button type="button" class="btn btn-ghost btn-sm workspace-back-btn" id="back-btn">← Volver</button>
+                    <h3 class="workspace-title" id="puzzle-name"></h3>
+                    <div class="timer workspace-timer">
+                        <span class="timer-icon" aria-hidden="true">⏱</span>
                         <span id="puzzle-timer">00:00</span>
                     </div>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                 </div>
-            </nav>
+                <div class="workspace-header-row workspace-header-row--formula">
+                    <span class="puzzle-expression" id="puzzle-expression"></span>
+                </div>
+            </header>
 
             <div class="workspace-layout">
                 <!-- Left: Gate Palette -->
@@ -198,6 +196,10 @@
 
                 <!-- Bottom: Toolbar -->
                 <footer class="toolbar">
+                    <div class="toolbar-group" id="free-var-controls" hidden>
+                        <button type="button" class="btn btn-outline btn-sm" id="add-var-btn" title="Agregar variable">+ Variable</button>
+                        <button type="button" class="btn btn-outline btn-sm" id="remove-var-btn" title="Quitar última variable">− Variable</button>
+                    </div>
                     <div class="toolbar-group">
                         <button class="btn btn-success" id="verify-btn">✓ Verificar</button>
                         <button class="btn btn-outline" id="hint-btn">💡 Pista</button>
