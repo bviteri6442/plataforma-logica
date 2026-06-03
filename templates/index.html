@@ -36,6 +36,7 @@
                     <span class="navbar-title">LogicPuzzle Lab</span>
                 </div>
                 <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn" title="Código QR de la plataforma" aria-label="Código QR">QR</button>
                     <button class="btn btn-icon btn-ghost" id="sound-toggle" title="Sonido">🔊</button>
                 </div>
             </nav>
@@ -73,10 +74,10 @@
                         <h3 class="menu-card-title">Calculadora</h3>
                         <p class="menu-card-desc">Genera tablas de verdad desde expresiones booleanas</p>
                     </div>
-                    <div class="menu-card" data-screen="history-screen" id="card-history">
-                        <span class="menu-card-icon">📊</span>
-                        <h3 class="menu-card-title">Historial</h3>
-                        <p class="menu-card-desc">Revisa tu progreso y puntuaciones</p>
+                    <div class="menu-card" data-screen="circuito-screen" id="card-circuito">
+                        <span class="menu-card-icon">⚡</span>
+                        <h3 class="menu-card-title">Circuito</h3>
+                        <p class="menu-card-desc">Sumador/restador binario — diseño Proteus y prototipo físico</p>
                     </div>
                 </div>
 
@@ -104,6 +105,7 @@
                     <li><button class="nav-btn" data-screen="calculator-screen">🔢 Calculadora</button></li>
                 </ul>
                 <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn" title="Código QR" aria-label="Código QR">QR</button>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                     <button class="btn btn-icon btn-ghost" id="sound-toggle-2" title="Sonido">🔊</button>
                 </div>
@@ -131,6 +133,7 @@
                     <li><button class="nav-btn" data-screen="calculator-screen">🔢 Calculadora</button></li>
                 </ul>
                 <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn" title="Código QR" aria-label="Código QR">QR</button>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                     <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
                 </div>
@@ -157,6 +160,7 @@
                         <span class="timer-icon" aria-hidden="true">⏱</span>
                         <span id="puzzle-timer">00:00</span>
                     </div>
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn workspace-qr-btn" title="Código QR" aria-label="Código QR">QR</button>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                 </div>
                 <div class="workspace-header-row workspace-header-row--formula">
@@ -226,6 +230,7 @@
                     <li><button class="nav-btn active" data-screen="exam-screen">🎮 Examen</button></li>
                 </ul>
                 <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn" title="Código QR" aria-label="Código QR">QR</button>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                     <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
                 </div>
@@ -252,6 +257,7 @@
                     <li><button class="nav-btn active" data-screen="calculator-screen">🔢 Calculadora</button></li>
                 </ul>
                 <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn" title="Código QR" aria-label="Código QR">QR</button>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                     <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
                 </div>
@@ -259,9 +265,20 @@
 
             <div class="calculator-container">
                 <h2 class="text-center mb-2">🔢 Calculadora Booleana</h2>
-                <p class="text-center text-secondary mb-3">Ingresa una expresión booleana para generar su tabla de verdad.</p>
 
-                <div class="calculator-input-group">
+                <div class="calc-mode-tabs" role="tablist">
+                    <button type="button" class="calc-mode-tab active" data-calc-mode="expr" role="tab" aria-selected="true">
+                        Expresión → Tabla
+                    </button>
+                    <button type="button" class="calc-mode-tab" data-calc-mode="table" role="tab" aria-selected="false">
+                        Tabla → Expresión
+                    </button>
+                </div>
+
+                <div id="calc-panel-expr" class="calc-panel">
+                    <p class="text-center text-secondary mb-3">Ingresa una expresión booleana para generar su tabla de verdad.</p>
+
+                    <div class="calculator-input-group">
                     <label for="calc-input">Expresión Booleana</label>
                     <div class="calculator-input-row">
                         <input type="text" id="calc-input" class="calculator-input"
@@ -298,7 +315,7 @@
                     </div>
                 </div>
 
-                <div class="text-center calculator-actions">
+                <div class="text-center calculator-actions calc-panel-actions" data-calc-panel="expr">
                     <button type="button" class="btn btn-primary btn-lg" id="calc-btn">
                         📊 Generar Tabla de Verdad
                     </button>
@@ -309,6 +326,20 @@
                         Ingresa una expresión y presiona "Generar" para ver la tabla de verdad.
                     </p>
                 </div>
+                </div><!-- /calc-panel-expr -->
+
+                <div id="calc-panel-table" class="calc-panel" hidden>
+                    <p class="text-center text-secondary mb-3">Define la columna <strong>F</strong> y obtén la expresión booleana (SOP).</p>
+                    <div id="calc-truth-builder"></div>
+                    <div class="text-center calculator-actions mt-2">
+                        <button type="button" class="btn btn-primary btn-lg" id="calc-from-table-btn">
+                            🧮 Obtener Expresión
+                        </button>
+                    </div>
+                    <div class="calculator-result mt-2" id="calc-table-result">
+                        <p class="text-muted text-center">Completa la tabla y presiona "Obtener Expresión".</p>
+                    </div>
+                </div>
 
                 <div class="calculator-syntax" id="calc-syntax-help">
                     <h4 class="info-section-title">📖 Sintaxis Soportada</h4>
@@ -318,15 +349,16 @@
                         <li><strong>Notación de clase:</strong> <code>+</code> = OR, <code>x</code> o <code>.</code> = AND</li>
                         <li><strong>Producto:</strong> <code>A(B)</code> o <code>A(B+C)</code> = <code>A AND (…)</code> (como en el libro)</li>
                         <li><strong>Ejemplo:</strong> <code>A x (A + B) + B x A</code></li>
+                        <li><strong>Modo Tabla → Expresión:</strong> define F y obtén la forma SOP (suma de productos)</li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <!-- ═══════════════════════════════════════════
-             HISTORY SCREEN
+             CIRCUITO SCREEN (galería sumador/restador)
              ═══════════════════════════════════════════ -->
-        <div id="history-screen" class="screen">
+        <div id="circuito-screen" class="screen">
             <nav class="navbar">
                 <div class="navbar-brand">
                     <span class="navbar-logo">🔬</span>
@@ -334,19 +366,41 @@
                 </div>
                 <ul class="navbar-nav">
                     <li><button class="nav-btn" data-screen="main-menu">← Menú</button></li>
-                    <li><button class="nav-btn" data-screen="puzzle-screen">🧩 Puzzles</button></li>
-                    <li><button class="nav-btn active" data-screen="history-screen">📊 Historial</button></li>
+                    <li><button class="nav-btn active" data-screen="circuito-screen">⚡ Circuito</button></li>
+                    <li><button class="nav-btn" data-screen="calculator-screen">🔢 Calculadora</button></li>
                 </ul>
                 <div class="navbar-controls">
+                    <button type="button" class="btn btn-icon btn-ghost qr-share-btn" title="Código QR" aria-label="Código QR">QR</button>
                     <button type="button" class="btn btn-icon btn-ghost mobile-menu-btn" aria-label="Abrir menú">☰</button>
                     <button class="btn btn-icon btn-ghost" title="Sonido">🔊</button>
                 </div>
             </nav>
 
-            <div class="history-container">
-                <h2 class="text-center mb-2">📊 Tu Progreso</h2>
-                <div id="history-content">
-                    <!-- Populated by JS -->
+            <div class="circuito-container">
+                <header class="circuito-header text-center">
+                    <h2>⚡ Circuito Sumador / Restador</h2>
+                    <p class="text-secondary">Diseño en Proteus y prototipo físico con compuertas, sumador de 4 bits y display de 7 segmentos.</p>
+                </header>
+
+                <div class="circuito-gallery">
+                    <figure class="circuito-card">
+                        <img src="/img/desigsuamdor.jpeg" alt="Diseño del circuito sumador/restador en Proteus" loading="lazy" width="960" height="540">
+                        <figcaption>
+                            <strong>1. Diseño en Proteus</strong> — Esquema del sumador/restador de 4 bits (XOR, 74283, decodificador 7448 y display).
+                        </figcaption>
+                    </figure>
+                    <figure class="circuito-card">
+                        <img src="/img/suma0011.jpeg" alt="Prototipo físico: suma 0010 + 0001 = 0011" loading="lazy" width="960" height="540">
+                        <figcaption>
+                            <strong>2. Suma binaria</strong> — <code>0010 + 0001 = 0011</code> (2 + 1 = 3 en decimal).
+                        </figcaption>
+                    </figure>
+                    <figure class="circuito-card">
+                        <img src="/img/suma0010.jpeg" alt="Prototipo físico: resta 0100 - 0010 = 0010" loading="lazy" width="960" height="540">
+                        <figcaption>
+                            <strong>3. Resta binaria</strong> — <code>0100 − 0010 = 0010</code> (4 − 2 = 2 en decimal).
+                        </figcaption>
+                    </figure>
                 </div>
             </div>
         </div>
@@ -390,9 +444,20 @@
                     <li><button type="button" class="mobile-nav-link" data-screen="free-screen">🔧 Modo Libre</button></li>
                     <li><button type="button" class="mobile-nav-link" data-screen="exam-screen">📝 Examen</button></li>
                     <li><button type="button" class="mobile-nav-link" data-screen="calculator-screen">🔢 Calculadora</button></li>
-                    <li><button type="button" class="mobile-nav-link" data-screen="history-screen">📊 Historial</button></li>
+                    <li><button type="button" class="mobile-nav-link" data-screen="circuito-screen">⚡ Circuito</button></li>
                 </ul>
             </nav>
+        </div>
+
+        <!-- QR Modal -->
+        <div class="qr-modal-overlay" id="qr-modal-overlay" aria-hidden="true">
+            <div class="qr-modal" role="dialog" aria-labelledby="qr-modal-title">
+                <button type="button" class="qr-modal-close" id="qr-modal-close" aria-label="Cerrar">✕</button>
+                <h3 id="qr-modal-title">📱 Accede desde tu celular</h3>
+                <p class="qr-modal-sub text-muted">Escanea el código QR para abrir LogicPuzzle Lab</p>
+                <img src="/img/qr.jpeg" alt="Código QR de LogicPuzzle Lab" class="qr-modal-image" width="220" height="220">
+                <p class="qr-modal-url">plataforma-logica-production.up.railway.app</p>
+            </div>
         </div>
 
         <!-- ═══════════════════════════════════════════

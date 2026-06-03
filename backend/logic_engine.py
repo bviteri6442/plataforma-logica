@@ -37,7 +37,8 @@ def preprocess_expression(expression: str) -> str:
     expr = expr.replace('{', '(').replace('}', ')')
     expr = re.sub(r'\s*\.\s*', ' AND ', expr)
     expr = re.sub(r'\+', ' OR ', expr)
-    expr = re.sub(r'([A-Z)\]])\s*[xX]\s*(?=[(A-Z])', r'\1 AND ', expr)
+    # Solo "x" minúscula como AND (notación de clase); no tocar la X de XOR/XNOR
+    expr = re.sub(r'([A-Z)\]])\s*x\s*(?=[(A-Z])', r'\1 AND ', expr)
     expr = re.sub(r'(?<![A-Z])([A-Z])\s*(?=\()', r'\1 AND ', expr)
     expr = re.sub(r'(\))\s*(?=\()', r'\1 AND ', expr)
     expr = re.sub(r'(\))\s*([A-Z])(?=\s|\)|$)', r'\1 AND \2', expr)
@@ -348,6 +349,207 @@ def generate_truth_table(expression: str) -> dict[str, Any]:
         'rows': rows,
         'ast': ast
     }
+
+
+# ─────────────────────────────────────────────────────────────
+# TABLA DE VERDAD → EXPRESIÓN (SOP)
+# ─────────────────────────────────────────────────────────────
+
+def _pattern_to_term(pattern: str, variables: list[str]) -> str:
+    """Convierte patrón binario (con '-') a término producto."""
+    parts: list[str] = []
+    for i, v in enumerate(variables):
+        ch = pattern[i]
+        if ch == '-':
+            continue
+        if ch == '1':
+            parts.append(v)
+        else:
+            parts.append(f'NOT {v}')
+    if not parts:
+        return '1'
+    if len(parts) == 1:
+        return parts[0]
+    return '(' + ' AND '.join(parts) + ')'
+
+
+def _merge_minterm_patterns(patterns: set[str]) -> set[str]:
+    """Un paso de Quine-McCluskey: fusiona patrones que difieren en un bit."""
+    merged: set[str] = set()
+    used: set[str] = set()
+    items = sorted(patterns)
+    for i, a in enumerate(items):
+        for b in items[i + 1:]:
+            diff = [k for k in range(len(a)) if a[k] != b[k]]
+            if len(diff) != 1:
+                continue
+            k = diff[0]
+            if a[k] == '-' or b[k] == '-':
+                continue
+            new_pat = ''.join(a[j] if a[j] == b[j] else '-' for j in range(len(a)))
+            merged.add(new_pat)
+            used.add(a)
+            used.add(b)
+    return (patterns - used) | merged
+
+
+def _simplify_minterm_patterns(patterns: set[str]) -> set[str]:
+    """Reduce minterms hasta obtener implicantes primos (QM simplificado)."""
+    current = set(patterns)
+    while True:
+        next_set = _merge_minterm_patterns(current)
+        if next_set == current:
+            break
+        current = next_set
+    return current
+
+
+# Huellas F (orden filas: 00, 01, 10, 11; variables en orden lexicográfico A, B, …)
+_STANDARD_GATES_2: dict[str, str] = {
+    '0001': 'AND',
+    '0111': 'OR',
+    '0110': 'XOR',
+    '1110': 'NAND',
+    '1000': 'NOR',
+    '1001': 'XNOR',
+}
+
+
+def _output_fingerprint(rows: list[dict[str, int]], vars_sorted: list[str]) -> str:
+    return ''.join(str(row['F']) for row in rows)
+
+
+def _detect_compact_gate(vars_sorted: list[str], rows: list[dict[str, int]]) -> str | None:
+    """Si la tabla coincide con una compuerta binaria estándar, devuelve p. ej. 'A XOR B'."""
+    if len(vars_sorted) != 2:
+        return None
+    fp = _output_fingerprint(rows, vars_sorted)
+    gate = _STANDARD_GATES_2.get(fp)
+    if not gate:
+        return None
+    a, b = vars_sorted[0], vars_sorted[1]
+    return f'{a} {gate} {b}'
+
+
+def _pack_expression_results(
+    vars_sorted: list[str],
+    sop_expression: str,
+    canonical_expression: str,
+    minterm_count: int,
+    compact: str | None,
+) -> dict[str, Any]:
+    """Hasta 2 expresiones: compactera (compuerta) y SOP si difieren."""
+    expressions: list[str] = []
+    if compact:
+        expressions.append(compact)
+    if sop_expression not in expressions:
+        expressions.append(sop_expression)
+    elif not expressions:
+        expressions.append(sop_expression)
+    expressions = expressions[:2]
+
+    if compact and len(expressions) > 1:
+        message = 'Forma compactera y suma de productos (SOP).'
+    elif compact:
+        message = f'Coincide con la compuerta estándar ({compact}).'
+    else:
+        message = 'Expresión en forma suma de productos (SOP).'
+
+    return {
+        'variables': vars_sorted,
+        'expression': expressions[0],
+        'expression_alt': expressions[1] if len(expressions) > 1 else None,
+        'expressions': expressions,
+        'expression_canonical': canonical_expression,
+        'form': 'sop' if not compact else 'mixed',
+        'minterm_count': minterm_count,
+        'message': message,
+    }
+
+
+def truth_table_to_expression(variables: list[str], rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """
+    Genera expresión booleana en forma SOP a partir de una tabla de verdad.
+
+    Args:
+        variables: nombres de variables de entrada (ej. ['A', 'B'])
+        rows: filas con valores 0/1 por variable y columna 'F'
+    """
+    if not variables:
+        raise ValueError('Debes indicar al menos una variable')
+
+    vars_sorted = sorted({str(v).upper() for v in variables})
+    n = len(vars_sorted)
+    if n > 6:
+        raise ValueError('Máximo 6 variables (64 filas)')
+
+    expected = 2 ** n
+    if len(rows) != expected:
+        raise ValueError(f'Se esperaban {expected} filas para {n} variable(s)')
+
+    normalized_rows: list[dict[str, int]] = []
+    for row in rows:
+        nr: dict[str, int] = {}
+        for v in vars_sorted:
+            if v not in row:
+                raise ValueError(f'Falta la columna {v} en una fila')
+            val = row[v]
+            nr[v] = 1 if val in (1, True, '1', 'true', 'True') else 0
+        if 'F' not in row:
+            raise ValueError('Cada fila debe incluir la salida F')
+        fval = row['F']
+        nr['F'] = 1 if fval in (1, True, '1', 'true', 'True') else 0
+        normalized_rows.append(nr)
+
+    minterm_patterns: list[str] = []
+    minterm_indices: list[int] = []
+    for idx, row in enumerate(normalized_rows):
+        if row['F'] == 1:
+            bits = ''.join(str(row[v]) for v in vars_sorted)
+            minterm_patterns.append(bits)
+            minterm_indices.append(idx)
+
+    if not minterm_patterns:
+        return {
+            'variables': vars_sorted,
+            'expression': '0',
+            'expression_alt': None,
+            'expressions': ['0'],
+            'expression_canonical': '0',
+            'form': 'constant',
+            'minterm_count': 0,
+            'message': 'La función es identicamente 0 (sin minterms).',
+        }
+
+    if len(minterm_patterns) == expected:
+        return {
+            'variables': vars_sorted,
+            'expression': '1',
+            'expression_alt': None,
+            'expressions': ['1'],
+            'expression_canonical': '1',
+            'form': 'constant',
+            'minterm_count': expected,
+            'message': 'La función es identicamente 1 (todos los minterms).',
+        }
+
+    canonical_terms = []
+    for bits in minterm_patterns:
+        canonical_terms.append(_pattern_to_term(bits, vars_sorted))
+    expression_canonical = ' OR '.join(canonical_terms)
+
+    simplified_patterns = _simplify_minterm_patterns(set(minterm_patterns))
+    simplified_terms = [_pattern_to_term(p, vars_sorted) for p in sorted(simplified_patterns)]
+    sop_expression = ' OR '.join(simplified_terms)
+    compact = _detect_compact_gate(vars_sorted, normalized_rows)
+
+    return _pack_expression_results(
+        vars_sorted,
+        sop_expression,
+        expression_canonical,
+        len(minterm_patterns),
+        compact,
+    )
 
 
 # ─────────────────────────────────────────────────────────────

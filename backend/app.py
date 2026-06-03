@@ -4,11 +4,12 @@ LogicPuzzle Lab - Flask Application
 API REST y servidor web para el simulador de lógica combinacional.
 """
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from flask_socketio import SocketIO
 from backend.config import SECRET_KEY, REDIS_URL, ALLOWED_ORIGINS
 from backend.logic_engine import (
     generate_truth_table,
+    truth_table_to_expression,
     expression_to_ast,
     ast_to_string,
     evaluate_circuit,
@@ -67,6 +68,15 @@ def load_puzzles() -> list[dict]:
 def index():
     """Sirve la página principal de la aplicación."""
     return render_template('index.html')
+
+
+IMG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'img')
+
+
+@app.route('/img/<path:filename>')
+def serve_img(filename):
+    """Sirve imágenes del proyecto (circuitos, QR, etc.)."""
+    return send_from_directory(IMG_DIR, filename)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -177,6 +187,35 @@ def generate_table():
         return jsonify(result_clean)
     except ValueError as e:
         return jsonify({'error': f'Error al parsear la expresión: {str(e)}'}), 400
+    except Exception as e:
+        return jsonify({'error': f'Error interno: {str(e)}'}), 500
+
+
+@app.route('/api/truth-table-to-expression', methods=['POST'])
+def table_to_expression():
+    """
+    Obtiene una expresión booleana (SOP) a partir de una tabla de verdad.
+
+    Body JSON:
+        {
+            "variables": ["A", "B"],
+            "rows": [{"A": 0, "B": 0, "F": 0}, ...]
+        }
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Se requiere la tabla de verdad'}), 400
+
+    variables = data.get('variables')
+    rows = data.get('rows')
+    if not variables or not rows:
+        return jsonify({'error': 'Indica variables y filas de la tabla'}), 400
+
+    try:
+        result = truth_table_to_expression(variables, rows)
+        return jsonify(result)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': f'Error interno: {str(e)}'}), 500
 

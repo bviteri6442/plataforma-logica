@@ -22,6 +22,7 @@ import {
     formatCalcToken,
     friendlyCalcError,
 } from './calc-input.js';
+import { CalcTruthBuilder } from './calc-truth-builder.js';
 import { sounds } from './sounds.js';
 import { UIController } from './ui.js';
 
@@ -66,6 +67,7 @@ class LogicPuzzleApp {
         // Calculator & learning: bind once
         this._bindCalculator();
         this._bindLearningNav();
+        this._bindQrShare();
 
         // Multiplayer callbacks
         this._bindMultiplayerEvents();
@@ -149,9 +151,6 @@ class LogicPuzzleApp {
                 break;
             case 'calculator-screen':
                 this._initCalculator();
-                break;
-            case 'history-screen':
-                this._initHistory();
                 break;
         }
     }
@@ -703,11 +702,73 @@ class LogicPuzzleApp {
 
     // ─── Kahoot Exam (see kahoot-exam.js) ───
 
+    _bindQrShare() {
+        const overlay = document.getElementById('qr-modal-overlay');
+        const closeBtn = document.getElementById('qr-modal-close');
+        const open = () => {
+            overlay?.classList.add('active');
+            overlay?.setAttribute('aria-hidden', 'false');
+        };
+        const close = () => {
+            overlay?.classList.remove('active');
+            overlay?.setAttribute('aria-hidden', 'true');
+        };
+
+        document.querySelectorAll('.qr-share-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                open();
+            });
+        });
+        closeBtn?.addEventListener('click', close);
+        overlay?.addEventListener('click', (e) => {
+            if (e.target === overlay) close();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay?.classList.contains('active')) close();
+        });
+    }
+
+    _setCalcMode(mode) {
+        const exprPanel = document.getElementById('calc-panel-expr');
+        const tablePanel = document.getElementById('calc-panel-table');
+        document.querySelectorAll('.calc-mode-tab').forEach((tab) => {
+            const active = tab.dataset.calcMode === mode;
+            tab.classList.toggle('active', active);
+            tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        if (exprPanel) exprPanel.hidden = mode !== 'expr';
+        if (tablePanel) tablePanel.hidden = mode !== 'table';
+        const syntax = document.getElementById('calc-syntax-help');
+        if (syntax) syntax.hidden = mode === 'table';
+        if (mode === 'table') {
+            this._initCalcTruthBuilder();
+        }
+    }
+
+    _initCalcTruthBuilder() {
+        if (!this.calcTruthBuilder) {
+            this.calcTruthBuilder = new CalcTruthBuilder('calc-truth-builder');
+        }
+        this.calcTruthBuilder.init();
+    }
+
     // ─── Calculator ───
 
     _bindCalculator() {
         if (this._calculatorBound) return;
         this._calculatorBound = true;
+
+        document.querySelectorAll('.calc-mode-tab').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                sounds.click();
+                this._setCalcMode(tab.dataset.calcMode);
+            });
+        });
+
+        document.getElementById('calc-from-table-btn')?.addEventListener('click', () => {
+            this._calculateFromTable();
+        });
 
         const calcBtn = document.getElementById('calc-btn');
         const input = document.getElementById('calc-input');
@@ -792,10 +853,67 @@ class LogicPuzzleApp {
     }
 
     _initCalculator() {
+        this._setCalcMode('expr');
         const input = document.getElementById('calc-input');
         if (input) {
             input.value = sanitizeCalcInput(input.value);
             input.focus();
+        }
+    }
+
+    async _calculateFromTable() {
+        if (!this.calcTruthBuilder) {
+            this._initCalcTruthBuilder();
+        }
+        const resultContainer = document.getElementById('calc-table-result');
+        if (!resultContainer || !this.calcTruthBuilder) return;
+
+        const variables = this.calcTruthBuilder.getVariables();
+        const rows = this.calcTruthBuilder.getRows();
+
+        try {
+            const response = await fetch('/api/truth-table-to-expression', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ variables, rows }),
+            });
+            const data = await response.json();
+
+            if (!response.ok || data.error) {
+                const msg = data.error || 'No se pudo obtener la expresión';
+                this.ui.showToast(msg, 'error');
+                resultContainer.innerHTML = `<p class="calc-error">${msg}</p>`;
+                sounds.error();
+                return;
+            }
+
+            const expressions = (data.expressions && data.expressions.length)
+                ? data.expressions.slice(0, 2)
+                : [data.expression].filter(Boolean);
+            const labels = ['Respuesta 1', 'Respuesta 2'];
+            const exprBlocks = expressions.map((expr, i) => `
+                <div class="calc-expr-result-box${i > 0 ? ' calc-expr-result-box--alt' : ''}">
+                    ${expressions.length > 1 ? `<p class="calc-expr-label">${labels[i]}</p>` : ''}
+                    <div class="learning-formula">${this.ui.formatExpression(expr)}</div>
+                </div>
+            `).join('');
+
+            resultContainer.innerHTML = `
+                <div class="calc-result-header">
+                    <h3 class="info-section-title">🧮 Expresión Booleana</h3>
+                    <div class="calc-meta">
+                        <span>${data.minterm_count} minterm${data.minterm_count !== 1 ? 's' : ''}</span>
+                        <span>${expressions.length > 1 ? '2 formas' : 'SOP'}</span>
+                    </div>
+                </div>
+                ${exprBlocks}
+                <p class="text-muted text-center mt-1" style="font-size:0.85rem">${data.message || ''}</p>
+            `;
+            sounds.success();
+        } catch (err) {
+            this.ui.showToast('Error de conexión con el servidor', 'error');
+            resultContainer.innerHTML = '<p class="calc-error">No se pudo conectar con el servidor.</p>';
+            console.error(err);
         }
     }
 
@@ -859,87 +977,6 @@ class LogicPuzzleApp {
             resultContainer.innerHTML = '<p class="calc-error">No se pudo conectar con el servidor. Verifica que la aplicación esté en ejecución.</p>';
             console.error(err);
         }
-    }
-
-    // ─── History ───
-
-    _initHistory() {
-        const container = document.getElementById('history-content');
-        if (!container) return;
-
-        const history = this.puzzleManager.getHistory();
-        const totalScore = this.puzzleManager.getTotalScore();
-        const totalStars = this.puzzleManager.getTotalStars();
-        const completed = this.puzzleManager.getCompletedCount();
-
-        let html = `
-            <div style="display:flex; gap:1.5rem; margin-bottom:2rem; flex-wrap:wrap;">
-                <div class="info-section" style="flex:1; min-width:150px; text-align:center;">
-                    <div style="font-size:2rem; font-weight:700; color:var(--accent-cyan);">${completed}</div>
-                    <div class="text-muted">Completados</div>
-                </div>
-                <div class="info-section" style="flex:1; min-width:150px; text-align:center;">
-                    <div style="font-size:2rem; font-weight:700; color:var(--accent-yellow);">${totalStars} ⭐</div>
-                    <div class="text-muted">Estrellas</div>
-                </div>
-                <div class="info-section" style="flex:1; min-width:150px; text-align:center;">
-                    <div style="font-size:2rem; font-weight:700; color:var(--accent-green);">${totalScore}</div>
-                    <div class="text-muted">Puntuación Total</div>
-                </div>
-            </div>
-        `;
-
-        if (history.length === 0) {
-            html += '<div class="history-empty">📭 Aún no has completado ningún ejercicio.</div>';
-        } else {
-            for (const entry of history) {
-                html += `
-                    <div class="history-item">
-                        <div class="history-item-info">
-                            <div class="history-item-name">${entry.name}</div>
-                            <div class="history-item-date">
-                                ${new Date(entry.date).toLocaleDateString('es-EC')} ·
-                                Puntuación: ${entry.score}
-                            </div>
-                        </div>
-                        <div class="history-item-stars">
-                            ${'⭐'.repeat(entry.stars)}${'☆'.repeat(3 - entry.stars)}
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        if (history.length > 0) {
-            html += `
-                <div class="mt-3 text-center">
-                    <button class="btn btn-danger btn-sm" id="clear-history-btn">
-                        🗑️ Borrar Historial
-                    </button>
-                </div>
-            `;
-        }
-
-        container.innerHTML = html;
-
-        document.getElementById('clear-history-btn')?.addEventListener('click', () => {
-            this.ui.showModal(
-                'Borrar Historial',
-                '¿Estás seguro de que quieres borrar todo tu progreso? Esta acción no se puede deshacer.',
-                [
-                    { text: 'Cancelar', class: 'btn-outline' },
-                    {
-                        text: 'Borrar',
-                        class: 'btn-danger',
-                        action: () => {
-                            this.puzzleManager.clearProgress();
-                            this._initHistory();
-                            this.ui.showToast('Historial borrado', 'info');
-                        }
-                    }
-                ]
-            );
-        });
     }
 }
 

@@ -39,8 +39,8 @@ function insertImplicitAnd(expr) {
 function applyAlgebraSyntax(expr) {
     let s = expr;
     s = s.replace(/\+/g, ' OR ');
-    // x or X as AND when between variables/parens (not inside words like XOR)
-    s = s.replace(/([A-Z)\]])\s*[xX]\s*(?=[(A-Z])/g, '$1 AND ');
+    // Solo "x" minúscula como AND; la X de XOR/XNOR no se sustituye
+    s = s.replace(/([A-Z)\]])\s*x\s*(?=[(A-Z])/g, '$1 AND ');
     return s.replace(/\s+/g, ' ').trim();
 }
 
@@ -110,7 +110,10 @@ export function friendlyCalcError(serverMessage) {
         );
     }
     if (/Token inesperado/i.test(msg)) {
-        return 'Revisa la sintaxis: use AND, OR, NOT (botones), + para OR, x para AND, y paréntesis balanceados.';
+        return (
+            'Revisa la sintaxis: use los botones AND, OR, NOT, XOR, NAND, NOR, XNOR; ' +
+            '+ para OR, x minúscula para AND, y paréntesis balanceados.'
+        );
     }
     if (/Carácter no reconocido/i.test(msg)) {
         return 'Hay un símbolo no permitido. Use letras A-Z, +, x, . y los botones de compuertas.';
