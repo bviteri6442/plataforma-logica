@@ -9,6 +9,7 @@ export class UIController {
         this.currentScreen = 'main-menu';
         this.screenHistory = [];
         this.toastContainer = null;
+        this._toastKeys = new Map();
 
         this._initToastContainer();
     }
@@ -115,7 +116,7 @@ export class UIController {
     }
 
     /**
-     * Show a toast notification.
+     * Show a toast notification (deduplicated, max 2 visible).
      */
     showToast(message, type = 'info', duration = 3000) {
         const icons = {
@@ -125,8 +126,25 @@ export class UIController {
             warning: '⚠️'
         };
 
+        const key = `${type}::${message}`;
+        const now = Date.now();
+        const lastShown = this._toastKeys.get(key);
+        if (lastShown && now - lastShown < 1200) {
+            return;
+        }
+        this._toastKeys.set(key, now);
+
+        this.toastContainer.querySelectorAll('.toast').forEach((t) => {
+            if (t.dataset.toastKey === key) t.remove();
+        });
+
+        while (this.toastContainer.children.length >= 2) {
+            this.toastContainer.firstElementChild?.remove();
+        }
+
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
+        toast.dataset.toastKey = key;
         toast.innerHTML = `
             <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
             <span class="toast-message">${message}</span>
@@ -134,11 +152,44 @@ export class UIController {
 
         this.toastContainer.appendChild(toast);
 
-        // Auto-remove
         setTimeout(() => {
             toast.classList.add('removing');
             setTimeout(() => toast.remove(), 300);
         }, duration);
+    }
+
+    /**
+     * Inline hint for slot mode (no toast spam).
+     */
+    showSlotHint(message, duration = 2500) {
+        if (this._slotHintMessage === message && this._slotHintTimer) {
+            clearTimeout(this._slotHintTimer);
+        } else {
+            this._slotHintMessage = message;
+        }
+
+        let el = document.getElementById('slot-drop-hint');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'slot-drop-hint';
+            el.className = 'slot-drop-hint';
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
+            document.getElementById('app')?.appendChild(el);
+        }
+        el.textContent = message;
+        el.classList.add('visible');
+        clearTimeout(this._slotHintTimer);
+        this._slotHintTimer = setTimeout(() => {
+            el.classList.remove('visible');
+            this._slotHintMessage = '';
+        }, duration);
+    }
+
+    clearSlotHint() {
+        clearTimeout(this._slotHintTimer);
+        this._slotHintMessage = '';
+        document.getElementById('slot-drop-hint')?.classList.remove('visible');
     }
 
     /**

@@ -1840,11 +1840,40 @@ body.nav-open {
     position: fixed;
     top: 70px;
     right: 20px;
+    left: auto;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     z-index: var(--z-toast);
     pointer-events: none;
+    max-height: 40vh;
+    overflow: hidden;
+}
+
+/* Slot mode: single non-blocking hint (replaces toast spam) */
+.slot-drop-hint {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    max-width: min(92vw, 360px);
+    padding: 0.65rem 1rem;
+    background: rgba(15, 50, 90, 0.95);
+    border: 1px solid var(--accent-orange);
+    border-radius: var(--radius-md);
+    color: var(--accent-yellow);
+    font-size: 0.9rem;
+    text-align: center;
+    z-index: calc(var(--z-toast) - 1);
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    box-shadow: var(--shadow-elevated);
+}
+
+.slot-drop-hint.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 .toast {
@@ -2354,6 +2383,26 @@ body.nav-open {
     .truth-table th,
     .truth-table td {
         padding: 0.4rem 0.5rem;
+    }
+
+    .toast-container {
+        top: auto;
+        bottom: 4.5rem;
+        right: 0.75rem;
+        left: 0.75rem;
+        max-height: 28vh;
+        align-items: stretch;
+    }
+
+    .toast {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.85rem;
+    }
+
+    .slot-drop-hint {
+        bottom: 6.5rem;
+        font-size: 0.85rem;
+        z-index: calc(var(--z-toast) + 1);
     }
 }
 

@@ -249,10 +249,11 @@ export const KahootExamMixin = {
         this.dragDrop.slotLoader = this.slotLoader;
 
         this.dragDrop.onSlotFilled = () => {
+            this.ui.clearSlotHint();
             this.simulator.simulate();
             if (this.slotLoader.allSlotsFilled()) this._autoSubmitIfComplete();
         };
-        this.dragDrop.onSlotError = (msg) => this.ui.showToast(msg, 'warning');
+        this.dragDrop.onSlotError = (msg) => this.ui.showSlotHint(msg);
         this.dragDrop.onInputToggled = (gateId) => this._toggleInput(gateId);
 
         this._populatePalette(puzzle.palette || ['AND', 'OR', 'NOT', 'XOR', 'NAND', 'NOR']);

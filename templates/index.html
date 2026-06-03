@@ -263,8 +263,9 @@
                     <label for="calc-input">Expresión Booleana</label>
                     <div class="calculator-input-row">
                         <input type="text" id="calc-input" class="calculator-input"
-                               placeholder="Ej: (A AND B) OR (NOT C)"
+                               placeholder="Variables a-z y botones de compuertas. Ej: (A AND B)"
                                autocomplete="off" spellcheck="false"
+                               inputmode="text"
                                aria-describedby="calc-syntax-help">
                         <div class="calculator-input-actions">
                             <button type="button" class="btn btn-ghost btn-sm" id="calc-backspace-btn" title="Borrar último">⌫</button>
@@ -281,6 +282,11 @@
                         <button type="button" class="shortcut-btn" data-token="XNOR">XNOR</button>
                         <button type="button" class="shortcut-btn" data-token="(">(</button>
                         <button type="button" class="shortcut-btn" data-token=")">)</button>
+                        <button type="button" class="shortcut-btn" data-token="[">[</button>
+                        <button type="button" class="shortcut-btn" data-token="]">]</button>
+                        <button type="button" class="shortcut-btn" data-token="{">{</button>
+                        <button type="button" class="shortcut-btn" data-token="}">}</button>
+                        <button type="button" class="shortcut-btn" data-token=".">.</button>
                         <button type="button" class="shortcut-btn" data-token="A">A</button>
                         <button type="button" class="shortcut-btn" data-token="B">B</button>
                         <button type="button" class="shortcut-btn" data-token="C">C</button>
@@ -303,12 +309,10 @@
                 <div class="calculator-syntax" id="calc-syntax-help">
                     <h4 class="info-section-title">📖 Sintaxis Soportada</h4>
                     <ul>
-                        <li><strong>Variables:</strong> letras mayúsculas (A, B, C, D…)</li>
-                        <li><strong>AND:</strong> A AND B · A · B · A ∧ B · A & B</li>
-                        <li><strong>OR:</strong> A OR B · A + B · A ∨ B · A | B</li>
-                        <li><strong>NOT:</strong> NOT A · ¬A · !A · ~A</li>
-                        <li><strong>XOR:</strong> A XOR B · A ⊕ B · A ^ B</li>
-                        <li><strong>NAND / NOR / XNOR:</strong> operadores directos o con NOT</li>
+                        <li><strong>Teclado:</strong> solo letras <strong>a-z</strong> (variables de una letra) y separadores <strong>( ) [ ] { } .</strong></li>
+                        <li><strong>Compuertas:</strong> use los botones AND, OR, NOT, XOR, NAND, NOR, XNOR</li>
+                        <li><strong>Punto (.)</strong> equivale a AND: <code>A.B</code> = <code>A AND B</code></li>
+                        <li><strong>[ ] { }</strong> se interpretan como paréntesis al generar la tabla</li>
                     </ul>
                 </div>
             </div>

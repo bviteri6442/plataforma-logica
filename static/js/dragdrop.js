@@ -29,7 +29,14 @@ export class DragDropManager {
 
         // Connection state
         this.isConnecting = false;
-        this.connectionStart = null; // { gateId, pinType, pinIndex }
+        this.connectionStart = null;
+
+        // Prevent duplicate drop (touch + synthetic mouse on mobile)
+        this._dropCommitted = false;
+        this._lastTouchEnd = 0;
+        this._usingTouch = false;
+        this._lastSlotErrorAt = 0;
+        this._lastSlotErrorMsg = '';
 
         // Callbacks
         this.onGateDropped = null;   // Called when a gate is dropped from palette
@@ -88,6 +95,7 @@ export class DragDropManager {
         this.isDragging = true;
         this.dragSource = 'palette';
         this.dragGateType = gateType;
+        this._dropCommitted = false;
         this.startPos = { x: clientX, y: clientY };
 
         // Create ghost element
@@ -190,6 +198,10 @@ export class DragDropManager {
 
     _onMouseUp(e) {
         if (!this.isDragging) return;
+        if (this._usingTouch || Date.now() - this._lastTouchEnd < 400) {
+            this._cleanupDrag();
+            return;
+        }
 
         if (this.dragSource === 'palette') {
             this._finishPaletteDrop(e.clientX, e.clientY);
@@ -207,6 +219,7 @@ export class DragDropManager {
         if (!gateItem) return;
 
         e.preventDefault();
+        this._usingTouch = true;
         const touch = e.touches[0];
         const gateType = gateItem.dataset.gateType;
         if (!gateType) return;
@@ -298,6 +311,7 @@ export class DragDropManager {
         if (!this.isDragging) return;
 
         const touch = e.changedTouches[0];
+        this._lastTouchEnd = Date.now();
 
         if (this.dragSource === 'palette') {
             this._finishPaletteDrop(touch.clientX, touch.clientY);
@@ -306,6 +320,9 @@ export class DragDropManager {
         }
 
         this._cleanupDrag();
+        setTimeout(() => {
+            this._usingTouch = false;
+        }, 450);
     }
 
     // ─── Connection Handling ───
@@ -401,13 +418,15 @@ export class DragDropManager {
     }
 
     _finishPaletteDrop(clientX, clientY) {
-        // Check if drop is within workspace
+        if (this._dropCommitted) return;
+
         const workspaceRect = this.svgWorkspace.getBoundingClientRect();
         const isOverWorkspace =
             clientX >= workspaceRect.left && clientX <= workspaceRect.right &&
             clientY >= workspaceRect.top && clientY <= workspaceRect.bottom;
 
         if (isOverWorkspace && this.dragGateType) {
+            this._dropCommitted = true;
             const svgPt = this.circuit.screenToSVG(clientX, clientY);
 
             if (this.slotMode && this.slotLoader) {
@@ -417,7 +436,7 @@ export class DragDropManager {
                     if (this.onSlotFilled) this.onSlotFilled(result);
                 } else {
                     sounds.error();
-                    if (this.onSlotError) this.onSlotError(result.message);
+                    this._emitSlotError(result.message);
                 }
                 return;
             }
@@ -437,6 +456,7 @@ export class DragDropManager {
         this.dragSource = null;
         this.dragGateType = null;
         this.dragGateId = null;
+        this._dropCommitted = false;
 
         if (this.dragGhost) {
             this.dragGhost.remove();
@@ -444,6 +464,17 @@ export class DragDropManager {
         }
 
         this.svgWorkspace.parentElement?.classList.remove('workspace-drop-active');
+    }
+
+    _emitSlotError(message) {
+        if (!this.onSlotError || !message) return;
+        const now = Date.now();
+        if (message === this._lastSlotErrorMsg && now - this._lastSlotErrorAt < 900) {
+            return;
+        }
+        this._lastSlotErrorMsg = message;
+        this._lastSlotErrorAt = now;
+        this.onSlotError(message);
     }
 
     // ─── Keyboard ───

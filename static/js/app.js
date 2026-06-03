@@ -14,6 +14,13 @@ import { LearningMode } from './learning.js';
 import { ExamMode } from './exam.js';
 import { MultiplayerClient } from './multiplayer.js';
 import { KahootExamMixin } from './kahoot-exam.js';
+import {
+    sanitizeCalcInput,
+    normalizeCalcExpression,
+    validateCalcExpression,
+    isAllowedCalcKey,
+    formatCalcToken,
+} from './calc-input.js';
 import { sounds } from './sounds.js';
 import { UIController } from './ui.js';
 
@@ -632,6 +639,30 @@ class LogicPuzzleApp {
         }
 
         if (input) {
+            input.addEventListener('beforeinput', (e) => {
+                if (e.inputType === 'insertText' && e.data && !isAllowedCalcKey(e.data)) {
+                    e.preventDefault();
+                }
+            });
+
+            input.addEventListener('input', () => {
+                const cleaned = sanitizeCalcInput(input.value);
+                if (cleaned !== input.value) {
+                    const pos = input.selectionStart;
+                    input.value = cleaned;
+                    input.setSelectionRange(pos - 1, pos - 1);
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData?.getData('text') || '').trim();
+                const cleaned = sanitizeCalcInput(text);
+                const start = input.selectionStart ?? input.value.length;
+                const end = input.selectionEnd ?? input.value.length;
+                input.value = input.value.slice(0, start) + cleaned + input.value.slice(end);
+            });
+
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -666,10 +697,12 @@ class LogicPuzzleApp {
             btn.addEventListener('click', () => {
                 if (!input) return;
                 const token = btn.dataset.token || btn.textContent.trim();
-                const insert = token.length === 1 ? token : ` ${token} `;
+                const insert = formatCalcToken(token);
                 const start = input.selectionStart ?? input.value.length;
                 const end = input.selectionEnd ?? input.value.length;
-                input.value = input.value.slice(0, start) + insert + input.value.slice(end);
+                input.value = sanitizeCalcInput(
+                    input.value.slice(0, start) + insert + input.value.slice(end)
+                );
                 const newPos = start + insert.length;
                 input.setSelectionRange(newPos, newPos);
                 input.focus();
@@ -679,14 +712,10 @@ class LogicPuzzleApp {
 
     _initCalculator() {
         const input = document.getElementById('calc-input');
-        if (input) input.focus();
-    }
-
-    _normalizeExpression(expr) {
-        return expr
-            .replace(/\s+/g, ' ')
-            .replace(/\s*([()])\s*/g, ' $1 ')
-            .trim();
+        if (input) {
+            input.value = sanitizeCalcInput(input.value);
+            input.focus();
+        }
     }
 
     async _calculateExpression() {
@@ -694,13 +723,15 @@ class LogicPuzzleApp {
         const resultContainer = document.getElementById('calc-result');
         if (!input || !resultContainer) return;
 
-        const expression = this._normalizeExpression(input.value);
-        if (!expression) {
-            this.ui.showToast('Ingresa una expresión booleana', 'warning');
+        const raw = sanitizeCalcInput(input.value).trim();
+        const validation = validateCalcExpression(raw);
+        if (!validation.ok) {
+            this.ui.showToast(validation.message, 'warning');
             return;
         }
 
-        input.value = expression;
+        const expression = normalizeCalcExpression(raw);
+        input.value = raw;
 
         try {
             const response = await fetch('/api/truth-table', {
